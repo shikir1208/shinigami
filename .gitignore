@@ -1,0 +1,17 @@
+# HTTrack mirror directory (original pull)
+AlphaNULL/
+AlphaNULL.whtt
+
+# Cached font/CDN mirrors
+fonts.googleapis.com/
+fonts.gstatic.com/
+www.gstatic.com/
+
+# Python / temp
+__pycache__/
+*.pyc
+clean.py
+
+# OS
+.DS_Store
+Thumbs.db

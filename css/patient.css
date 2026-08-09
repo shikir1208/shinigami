@@ -1,0 +1,315 @@
+/* =============================================
+   LIQUID GLASS PATIENT MONITOR & TELEMETRY
+   ============================================= */
+
+.patient-layout {
+    padding: var(--spacing-xl);
+    min-height: calc(100vh - 80px);
+    max-width: 1800px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s var(--transition-smooth) both;
+}
+
+.patient-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--spacing-xl);
+}
+
+.charts-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    min-width: 0;
+}
+
+.info-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    min-width: 0;
+}
+
+.patient-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-glass);
+}
+
+.patient-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-width: 0;
+}
+
+.patient-avatar {
+    flex-shrink: 0;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--bg-glass-input);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent-teal);
+    border: 2px solid var(--border-glass);
+    box-shadow: 0 0 20px var(--accent-teal-glow);
+    transition: all var(--transition-smooth);
+}
+
+.patient-avatar:hover {
+    border-color: var(--accent-blue);
+    transform: scale(1.08);
+    box-shadow: 0 0 30px var(--accent-blue-glow);
+}
+
+.patient-details h1 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.02em;
+}
+
+.patient-demographics {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+/* Patient Actions Bar */
+.patient-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Sensor Panels Grid */
+.sensors-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+}
+
+.sensor-panel {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    height: 170px;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-glass);
+    animation: fadeUp 0.5s var(--transition-smooth) both;
+    transition: all var(--transition-smooth);
+}
+
+.sensor-panel:hover {
+    transform: translateY(-4px) scale(1.005);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(0, 245, 255, 0.3);
+}
+
+.sensor-info {
+    padding: var(--spacing-lg);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--bg-glass-input);
+}
+
+.sensor-name {
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.sensor-value-container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.sensor-value {
+    font-family: var(--font-mono);
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.sensor-unit {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+.sensor-canvas-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-chart);
+    overflow: hidden;
+}
+
+.sensor-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Sidebar Doctor Helper */
+.doctor-helper-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    animation: slideInRight 0.6s var(--transition-smooth) 0.2s both;
+}
+
+.overall-status {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-glass);
+}
+
+.overall-status h3 {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+}
+
+.status-text {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.status-text.normal { color: var(--color-normal); }
+.status-text.warning { color: var(--color-warning); }
+.status-text.critical { color: var(--color-critical); }
+
+.alerts-timeline {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding-right: 0.3rem;
+}
+
+.timeline-item {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--border-subtle);
+    background: var(--bg-glass-input);
+    backdrop-filter: blur(10px);
+    font-size: 0.88rem;
+    animation: fadeUp 0.3s var(--transition-smooth) both;
+}
+
+.timeline-item.warning {
+    border-left-color: var(--color-warning);
+    background: rgba(255, 159, 10, 0.08);
+}
+
+.timeline-item.critical {
+    border-left-color: var(--color-critical);
+    background: rgba(255, 69, 58, 0.1);
+}
+
+.timeline-time {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.timeline-title {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: var(--text-primary);
+}
+
+.timeline-desc {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.exo-connection-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: 0.85rem 1.4rem;
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glass);
+}
+
+/* Section headers inside patient view */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.section-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+@media (max-width: 1200px) {
+    .patient-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .patient-layout {
+        padding: var(--spacing-md);
+    }
+    .sensor-panel {
+        grid-template-columns: 160px 1fr;
+        height: 140px;
+    }
+    .sensor-value {
+        font-size: 2rem;
+    }
+}

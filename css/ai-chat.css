@@ -1,0 +1,134 @@
+/* =============================================
+   AI CHAT — APPLE INTELLIGENCE GLASS MODAL
+   ============================================= */
+
+.ai-chat-modal .modal-content {
+    max-width: 760px;
+    width: 95%;
+    height: 82vh;
+    max-height: 740px;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-glass-heavy);
+    backdrop-filter: var(--glass-blur-heavy);
+    -webkit-backdrop-filter: var(--glass-blur-heavy);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    animation: scaleIn 0.5s var(--transition-smooth) both;
+}
+
+.ai-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.02);
+    flex-shrink: 0;
+}
+
+.ai-chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.ai-chat-header-left svg {
+    color: var(--accent-teal);
+    filter: drop-shadow(0 0 8px var(--accent-teal-glow));
+}
+
+.ai-chat-header-left h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.ai-chat-header-left .ai-badge {
+    font-size: 0.68rem;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #ffffff;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px var(--accent-blue-glow);
+}
+
+.ai-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    scroll-behavior: smooth;
+}
+
+.ai-chat-message {
+    display: flex;
+    gap: var(--spacing-md);
+    max-width: 85%;
+    animation: fadeUp 0.4s var(--transition-smooth) both;
+}
+
+.ai-chat-message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.ai-chat-message.user .chat-msg-bubble {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #0055B3 100%);
+    color: #ffffff;
+    border-radius: var(--radius-lg) var(--radius-lg) 2px var(--radius-lg);
+    box-shadow: 0 8px 20px rgba(10, 132, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-chat-message.assistant .chat-msg-bubble {
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    color: var(--text-primary);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 2px;
+    border: 1px solid var(--border-subtle);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-glass);
+}
+
+.chat-msg-bubble {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.ai-chat-input-area {
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-top: 1px solid var(--border-subtle);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.ai-chat-input {
+    flex: 1;
+    background: var(--bg-glass-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    padding: 0.8rem 1.2rem;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.ai-chat-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-glow);
+}

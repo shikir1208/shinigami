@@ -1,0 +1,179 @@
+/* =============================================
+   ALPHA-EON — APPLE INTELLIGENCE VOICE OVERLAY
+   ============================================= */
+
+@import url('../../fonts.googleapis.com/css2722c.css?family=Orbitron:wght@400;500;700&display=swap');
+
+/* Header Trigger Button */
+.eon-header-btn {
+    position: relative;
+    background: var(--bg-glass) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--border-glass) !important;
+    color: var(--accent-teal) !important;
+    font-family: var(--font-sans) !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    border-radius: var(--radius-pill) !important;
+    display: flex !important;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 1rem !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 15px var(--accent-teal-glow);
+    transition: all var(--transition-fast) !important;
+}
+
+.eon-header-btn:hover {
+    border-color: rgba(0, 245, 255, 0.5) !important;
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 8px 25px rgba(0, 245, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Fullscreen Overlay */
+.eon-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(3, 5, 9, 0.85);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--transition-smooth);
+}
+
+.eon-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.eon-canvas-fullscreen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+}
+
+/* Close Button */
+.eon-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-glass-heavy);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    color: #ffffff;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.eon-close:hover {
+    transform: scale(1.1) rotate(90deg);
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 20px var(--accent-teal-glow);
+}
+
+/* Provider Bar */
+.eon-provider-bar {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.eon-provider-select {
+    background: var(--bg-glass-heavy);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.eon-status-label {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent-teal);
+    text-transform: uppercase;
+}
+
+/* Output Panel */
+.eon-output-panel {
+    position: absolute;
+    bottom: 8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 680px;
+    z-index: 10;
+    background: var(--bg-glass-heavy);
+    backdrop-filter: var(--glass-blur-heavy);
+    -webkit-backdrop-filter: var(--glass-blur-heavy);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding: var(--spacing-xl);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.eon-transcript {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.eon-response {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* Mic Controls */
+.eon-controls {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.eon-mic-btn {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-teal) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 12px 35px rgba(10, 132, 255, 0.5), 0 0 30px var(--accent-teal-glow);
+    transition: all var(--transition-fast);
+}
+
+.eon-mic-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 16px 45px rgba(10, 132, 255, 0.7), 0 0 45px var(--accent-teal-glow);
+}
