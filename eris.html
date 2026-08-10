@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eris — Patient Rehabilitation & Health Companion</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#060914">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css?v=eris_1.0">
+    <link rel="stylesheet" href="css/base.css?v=eris_1.0">
+    <link rel="stylesheet" href="css/components.css?v=eris_1.0">
+    <link rel="stylesheet" href="css/eris.css?v=eris_1.0">
+</head>
+<body class="eris-app-body">
+
+    <!-- Android Device Frame Wrapper (App Shell) -->
+    <div class="eris-mobile-shell">
+        
+        <!-- Top Android Status Bar -->
+        <div class="eris-status-bar">
+            <div class="eris-status-left">
+                <span id="eris-clock">12:00</span>
+                <span class="eris-app-badge">ERIS ✦ AI</span>
+            </div>
+            <div class="eris-status-right">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4a1 1 0 0 0 1.25 1.25l1.79-.62C8.93 20.26 10.88 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <!-- Top Header Navigation -->
+        <header class="eris-header">
+            <div class="eris-user-summary">
+                <div class="eris-avatar" id="eris-avatar">KO</div>
+                <div>
+                    <div class="eris-greeting">Hello, Khalid</div>
+                    <div class="eris-subgreeting">Rehab Phase II • Ward 4</div>
+                </div>
+            </div>
+            <div class="eris-header-actions">
+                <button class="eris-sos-btn" id="eris-btn-sos" title="Emergency SOS">
+                    <span>SOS</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content View Containers -->
+        <main class="eris-main-content">
+            
+            <!-- TAB 1: HOME & RECOVERY DASHBOARD -->
+            <section id="tab-home" class="eris-tab-view active">
+                
+                <!-- Daily Motivational Quote Card -->
+                <div class="eris-card eris-quote-card anim-fade-up">
+                    <div class="eris-quote-header">
+                        <span class="eris-pill-tag">💡 DAILY INSPIRATION</span>
+                        <button id="eris-btn-new-quote" class="eris-icon-btn" title="Refresh Quote">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        </button>
+                    </div>
+                    <p class="eris-quote-text" id="eris-quote-text">"Small daily improvements over time lead to stunning rehabilitation results."</p>
+                    <div class="eris-quote-author" id="eris-quote-author">— Dr. Sarah Chen</div>
+                </div>
+
+                <!-- Recovery Progress Gauge -->
+                <div class="eris-card eris-progress-card anim-fade-up" style="animation-delay: 0.1s">
+                    <div class="eris-progress-ring-container">
+                        <svg viewBox="0 0 100 100" class="eris-progress-ring">
+                            <circle class="eris-ring-bg" cx="50" cy="50" r="42"></circle>
+                            <circle class="eris-ring-fill" id="eris-progress-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="84"></circle>
+                        </svg>
+                        <div class="eris-ring-content">
+                            <span class="eris-ring-number" id="eris-recovery-val">68%</span>
+                            <span class="eris-ring-label">RECOVERY</span>
+                        </div>
+                    </div>
+                    <div class="eris-progress-info">
+                        <h3>Rehabilitation Milestone</h3>
+                        <p>Target: 85% Motor Function by Day 30</p>
+                        <div class="eris-streak-pill">
+                            <span>🔥 12 Day Streak Active!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Pills -->
+                <div class="eris-quick-grid anim-fade-up" style="animation-delay: 0.2s">
+                    <button class="eris-quick-pill" id="quick-breathing">🫁 SpO2 Breathing</button>
+                    <button class="eris-quick-pill" id="quick-doctor">👨‍⚕️ Contact Doctor</button>
+                    <button class="eris-quick-pill" id="quick-ai">✦ Phi-3.5 Check</button>
+                </div>
+
+                <!-- Daily Rehab Quest List -->
+                <div class="eris-card anim-fade-up" style="animation-delay: 0.3s">
+                    <div class="eris-section-title">
+                        <span>Daily Rehab Quests</span>
+                        <span class="eris-badge-sm">+700 XP Total</span>
+                    </div>
+                    <div class="eris-quest-list" id="eris-home-quests">
+                        <!-- Quests injected by JS -->
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 2: REHAB GAMIFICATION & RANKINGS -->
+            <section id="tab-rehab" class="eris-tab-view">
+                
+                <!-- Player Rank Banner -->
+                <div class="eris-card eris-rank-card anim-fade-up">
+                    <div class="eris-rank-badge-icon">👑</div>
+                    <div class="eris-rank-details">
+                        <div class="eris-rank-tier" id="eris-rank-tier">GOLD TIER III</div>
+                        <div class="eris-rank-level" id="eris-rank-level">Level 14 • Cyber Warrior</div>
+                        <div class="eris-xp-bar-wrapper">
+                            <div class="eris-xp-bar-fill" id="eris-xp-fill" style="width: 78%;"></div>
+                        </div>
+                        <div class="eris-xp-text" id="eris-xp-text">4,850 / 6,000 XP to Platinum</div>
+                    </div>
+                </div>
+
+                <!-- Achievement Trophies Grid -->
+                <div class="eris-card anim-fade-up" style="animation-delay: 0.1s">
+                    <div class="eris-section-title">Achievement Trophies</div>
+                    <div class="eris-trophy-grid">
+                        <div class="eris-trophy-item unlocked">
+                            <div class="eris-trophy-icon">🦾</div>
+                            <div class="eris-trophy-name">Iron Wrist</div>
+                            <div class="eris-trophy-desc">10 Wrist Quests</div>
+                        </div>
+                        <div class="eris-trophy-item unlocked">
+                            <div class="eris-trophy-icon">🫁</div>
+                            <div class="eris-trophy-name">Oxygen Pioneer</div>
+                            <div class="eris-trophy-desc">98%+ SpO2 Goal</div>
+                        </div>
+                        <div class="eris-trophy-item unlocked">
+                            <div class="eris-trophy-icon">🧘</div>
+                            <div class="eris-trophy-name">Zen Regulator</div>
+                            <div class="eris-trophy-desc">GSR Stress < 4uS</div>
+                        </div>
+                        <div class="eris-trophy-item locked">
+                            <div class="eris-trophy-icon">⚡</div>
+                            <div class="eris-trophy-name">Cyber Mythic</div>
+                            <div class="eris-trophy-desc">Reach Level 20</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Quests Checklist -->
+                <div class="eris-card anim-fade-up" style="animation-delay: 0.2s">
+                    <div class="eris-section-title">Active Physical Quests</div>
+                    <div class="eris-quest-list" id="eris-full-quests">
+                        <!-- Quests injected by JS -->
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 3: LIVE TELEMETRY & NEURAL CORE ORB -->
+            <section id="tab-vitals" class="eris-tab-view">
+                
+                <!-- Active Neural Core Orb Display -->
+                <div class="eris-card eris-orb-card anim-fade-up">
+                    <div class="eris-orb-canvas-container">
+                        <canvas id="eris-neural-orb" width="200" height="200"></canvas>
+                        <div class="eris-orb-status-tag" id="eris-orb-status-tag">
+                            <span class="ai-pulse-dot"></span>
+                            <span id="eris-orb-status-text">NEURAL MONITOR • STABLE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensor Telemetry Grid -->
+                <div class="eris-vitals-grid anim-fade-up" style="animation-delay: 0.1s">
+                    <div class="eris-vital-card">
+                        <span class="vital-label">PPG HEART RATE</span>
+                        <div class="vital-val" id="eris-val-hr">72 <span class="vital-unit">BPM</span></div>
+                        <span class="vital-status status-normal">Normal Rhythm</span>
+                    </div>
+                    <div class="eris-vital-card">
+                        <span class="vital-label">SpO2 OXYGEN</span>
+                        <div class="vital-val" id="eris-val-spo2">98 <span class="vital-unit">%</span></div>
+                        <span class="vital-status status-normal">Optimal Saturation</span>
+                    </div>
+                    <div class="eris-vital-card">
+                        <span class="vital-label">EMG MUSCLE TONE</span>
+                        <div class="vital-val" id="eris-val-emg">3.4 <span class="vital-unit">µV</span></div>
+                        <span class="vital-status status-normal">Flexor Active</span>
+                    </div>
+                    <div class="eris-vital-card">
+                        <span class="vital-label">GSR STRESS</span>
+                        <div class="vital-val" id="eris-val-gsr">2.8 <span class="vital-unit">µS</span></div>
+                        <span class="vital-status status-normal">Calm State</span>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: DOCTOR CHAT & PHI-3.5 AI ASSISTANT -->
+            <section id="tab-doctor" class="eris-tab-view">
+                
+                <!-- Doctor Profile Banner -->
+                <div class="eris-card eris-doctor-banner anim-fade-up">
+                    <div class="eris-doc-avatar">SC</div>
+                    <div>
+                        <div class="eris-doc-name">Dr. Sarah Chen</div>
+                        <div class="eris-doc-title">ICU Attending & Rehabilitation Specialist</div>
+                    </div>
+                    <span class="badge badge-normal" style="margin-left:auto;">ONLINE</span>
+                </div>
+
+                <!-- Chat Feed -->
+                <div class="eris-card eris-chat-card anim-fade-up" style="animation-delay: 0.1s">
+                    <div class="eris-chat-feed" id="eris-chat-feed">
+                        <div class="eris-msg eris-msg-doc">
+                            <div class="eris-msg-bubble">Good morning Khalid! Your wrist flexor EMG readings look great today. Keep up the 3x10 wrist extension quests!</div>
+                            <span class="eris-msg-time">09:15 AM</span>
+                        </div>
+                        <div class="eris-msg eris-msg-patient">
+                            <div class="eris-msg-bubble">Thanks Dr. Sarah! I completed the morning oxygen breathing session and hit 98% SpO2.</div>
+                            <span class="eris-msg-time">09:22 AM</span>
+                        </div>
+                        <div class="eris-msg eris-msg-ai">
+                            <div class="eris-msg-bubble">✦ <strong>Phi-3.5 Patient Assistant</strong>: Telemetry confirms stable 72 bpm heart rate and optimal muscle recovery index.</div>
+                            <span class="eris-msg-time">09:23 AM</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Box -->
+                    <div class="eris-chat-input-wrapper">
+                        <input type="text" id="eris-chat-input" class="input-field eris-chat-input" placeholder="Message Dr. Sarah or ask Phi-3.5...">
+                        <button class="btn btn-primary btn-sm" id="eris-chat-send">Send</button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 5: PROFILE & MEDICAL CARD -->
+            <section id="tab-profile" class="eris-tab-view">
+                <div class="eris-card anim-fade-up">
+                    <div class="eris-profile-header">
+                        <div class="eris-avatar-lg">KO</div>
+                        <h2>Khalid Othman</h2>
+                        <span class="eris-meta-pill">Patient ID: PT-0331 • ICU Ward 4</span>
+                    </div>
+                    <div class="eris-profile-details">
+                        <div class="eris-detail-row">
+                            <span class="detail-label">Age / Gender</span>
+                            <span class="detail-val">42 M</span>
+                        </div>
+                        <div class="eris-detail-row">
+                            <span class="detail-label">Condition Profile</span>
+                            <span class="detail-val">Post-Stroke Motor Rehab</span>
+                        </div>
+                        <div class="eris-detail-row">
+                            <span class="detail-label">Assigned Attending</span>
+                            <span class="detail-val">Dr. Sarah Chen</span>
+                        </div>
+                        <div class="eris-detail-row">
+                            <span class="detail-label">Emergency Phone</span>
+                            <span class="detail-val">+966 50 123 4567</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Floating Liquid Glass Bottom Navigation Dock -->
+        <nav class="eris-bottom-dock">
+            <button class="eris-dock-btn active" data-tab="tab-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Home</span>
+            </button>
+            <button class="eris-dock-btn" data-tab="tab-rehab">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                <span>Rehab</span>
+            </button>
+            <button class="eris-dock-btn" data-tab="tab-vitals">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span>Vitals</span>
+            </button>
+            <button class="eris-dock-btn" data-tab="tab-doctor">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Doctor</span>
+            </button>
+            <button class="eris-dock-btn" data-tab="tab-profile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+
+        <!-- Full-Screen Emergency SOS Overlay -->
+        <div id="eris-sos-overlay" class="eris-sos-overlay" style="display: none;">
+            <div class="eris-sos-content">
+                <div class="eris-sos-icon-pulse">🚨</div>
+                <h2>EMERGENCY SOS DISPATCHED</h2>
+                <p>Alert notification sent to Dr. Sarah Chen and ICU Ward 4 Nurse Station!</p>
+                <div class="eris-sos-timer" id="eris-sos-timer">3</div>
+                <button class="btn btn-secondary btn-lg" id="eris-btn-cancel-sos">Cancel Emergency Alert</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/orb-viz.js?v=eris_1.0"></script>
+    <script src="js/alpha1-brain.js?v=eris_1.0"></script>
+    <script src="js/patients.js?v=eris_1.0"></script>
+    <script src="js/eris-app.js?v=eris_1.0"></script>
+</body>
+</html>
