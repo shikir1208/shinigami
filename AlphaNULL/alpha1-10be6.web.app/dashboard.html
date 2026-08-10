@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from alpha1-10be6.web.app/dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:09:05 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Alpha 1</title>
+    <link rel="preconnect" href="../fonts.googleapis.com/index.html">
+    <link rel="preconnect" href="../fonts.gstatic.com/index.html" crossorigin>
+    <link href="../fonts.googleapis.com/css25fc8.css?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/alpha-eon.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="header-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                    Alpha <span>1</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <a href="alpha1-viz.html" class="btn btn-sm" id="btn-alpha1-viz" style="background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(6,182,212,0.15)); border: 1px solid rgba(139,92,246,0.3); color: #8b5cf6; text-decoration: none; font-family: 'Orbitron', 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.1em; font-size: 0.7rem;" title="Neural Core Visualization">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    ALPHA1
+                </a>
+                <button class="btn btn-sm eon-header-btn" id="eon-trigger" title="Alpha-Eon Voice AI">
+                    <div class="eon-btn-orb">
+                        <div class="eon-btn-core"></div>
+                        <div class="eon-btn-ring"></div>
+                        <div class="eon-btn-beam"></div>
+                    </div>
+                    Alpha-Eon
+                </button>
+                <button class="btn btn-sm" id="btn-ai-chat" title="Alpha1 AI">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1l-1 7H9l-1-7H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+                    Alpha1 AI
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-shift-report">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Shift Report
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-settings" title="Settings">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+                <div class="time-display" id="current-time">00:00:00</div>
+                <div class="doctor-info">
+                    <span id="doctor-name">Dr. Smith</span>
+                    <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="stats-grid">
+                <div class="card stat-card fade-in" style="animation-delay: 0.1s">
+                    <div class="stat-icon" style="background: var(--color-normal-bg); color: var(--color-normal);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Patients</h3>
+                        <div class="stat-value" id="stat-total">0</div>
+                    </div>
+                </div>
+                <div class="card stat-card fade-in" style="animation-delay: 0.2s">
+                    <div class="stat-icon" style="background: var(--color-critical-bg); color: var(--color-critical);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Critical Alerts</h3>
+                        <div class="stat-value" id="stat-critical">0</div>
+                    </div>
+                </div>
+                <div class="card stat-card fade-in" style="animation-delay: 0.3s">
+                    <div class="stat-icon" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Bed Occupancy</h3>
+                        <div class="stat-value" id="stat-occupancy">0%</div>
+                    </div>
+                </div>
+                <div class="card stat-card fade-in" style="animation-delay: 0.4s">
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Avg Risk Score</h3>
+                        <div class="stat-value" id="stat-risk">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions-row">
+                <div class="quick-action-card glass-panel" id="qa-shift-handoff" style="cursor:pointer;">
+                    <div class="qa-icon" style="background: rgba(16,185,129,0.1); color: #10b981;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></div>
+                    <div class="qa-info">
+                        <div class="qa-title">Shift Handoff</div>
+                        <div class="qa-desc">Start new shift</div>
+                    </div>
+                </div>
+                <div class="quick-action-card glass-panel" id="qa-patient-comm" style="cursor:pointer;">
+                    <div class="qa-icon" style="background: rgba(14,165,233,0.1); color: #0ea5e9;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+                    <div class="qa-info">
+                        <div class="qa-title">Patient Communication</div>
+                        <div class="qa-desc">Chat, Call, Notify</div>
+                    </div>
+                </div>
+                <div class="quick-action-card glass-panel" id="qa-analytics" style="cursor:pointer;">
+                    <div class="qa-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+                    <div class="qa-info">
+                        <div class="qa-title">Analytics</div>
+                        <div class="qa-desc">Sensor readings</div>
+                    </div>
+                </div>
+                <div class="quick-action-card glass-panel" id="qa-rehab" style="cursor:pointer;">
+                    <div class="qa-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></div>
+                    <div class="qa-info">
+                        <div class="qa-title">Rehabilitation</div>
+                        <div class="qa-desc">Sessions & Eris</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card fade-in" style="margin-bottom: var(--spacing-xl); animation-delay: 0.25s; padding: var(--spacing-md);">
+                <div class="section-header" style="margin-bottom: var(--spacing-sm);">
+                    <h2 style="font-size: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Live Ward Map</h2>
+                </div>
+                <div id="ward-map-container" class="ward-map-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md); background: rgba(0,0,0,0.2); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: var(--spacing-md); min-height: 200px;">
+                    <!-- Rooms injected by JS -->
+                </div>
+            </div>
+
+            <!-- Search + Sort Toolbar -->
+            <div class="search-sort-toolbar fade-in" style="animation-delay: 0.35s">
+                <div class="search-box">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="patient-search" class="input-field search-input" placeholder="Search by name, ID, or ward…">
+                </div>
+                <div class="sort-controls">
+                    <label class="input-label" style="white-space:nowrap; margin:0;">Sort by:</label>
+                    <select id="sort-select" class="input-field" style="width: auto; padding: 0.4rem 0.75rem;">
+                        <option value="admission-desc">Admission Date (Newest)</option>
+                        <option value="admission-asc">Admission Date (Oldest)</option>
+                        <option value="name-asc">Name (A–Z)</option>
+                        <option value="name-desc">Name (Z–A)</option>
+                        <option value="severity">Severity (Critical First)</option>
+                    </select>
+                    <div class="badge badge-normal" style="white-space:nowrap;">Live Sync Active</div>
+                    <button class="btn btn-secondary btn-sm" id="btn-resync-db" style="margin-right: 0.5rem;">Resync DB</button>
+                    <button class="btn btn-primary btn-sm" id="btn-add-patient">+ Add Patient</button>
+                </div>
+            </div>
+
+            <div class="dashboard-main-grid">
+                <div class="patients-grid fade-in" style="animation-delay: 0.3s" id="patients-grid">
+                    <!-- Patient cards generated by JS -->
+                </div>
+                <aside class="activity-feed glass-panel">
+                    <div class="af-header">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        RECENT ACTIVITY
+                    </div>
+                    <div class="af-list" id="af-list">
+                        <div class="af-item"><span class="af-dot af-green"></span><span class="af-time">2m ago</span><span class="af-text">Patient admitted to ICU-2</span></div>
+                        <div class="af-item"><span class="af-dot af-yellow"></span><span class="af-time">5m ago</span><span class="af-text">SpO2 alert resolved — P-1042</span></div>
+                        <div class="af-item"><span class="af-dot af-green"></span><span class="af-time">8m ago</span><span class="af-text">Medication administered — Ward B</span></div>
+                        <div class="af-item"><span class="af-dot af-red"></span><span class="af-time">12m ago</span><span class="af-text">Critical HR spike — P-1038</span></div>
+                        <div class="af-item"><span class="af-dot af-green"></span><span class="af-time">15m ago</span><span class="af-text">Shift handoff completed</span></div>
+                        <div class="af-item"><span class="af-dot af-yellow"></span><span class="af-time">22m ago</span><span class="af-text">GSR anomaly flagged — P-1045</span></div>
+                        <div class="af-item"><span class="af-dot af-green"></span><span class="af-time">30m ago</span><span class="af-text">Lab results received — 4 patients</span></div>
+                        <div class="af-item"><span class="af-dot af-green"></span><span class="af-time">45m ago</span><span class="af-text">System calibration complete</span></div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+        <footer class="dashboard-footer">
+            <span class="df-left">Alpha 1 Clinical Platform v2.4</span>
+            <span class="df-center"><span class="df-status-dot"></span> All Systems Operational</span>
+            <span class="df-right font-mono">Last sync: <span id="last-sync">2s ago</span></span>
+        </footer>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div id="add-patient-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel">
+            <div class="modal-header">
+                <h2>Add New Patient</h2>
+                <button id="btn-close-modal" class="btn-close">&times;</button>
+            </div>
+            <form id="form-add-patient" class="modal-form">
+                <div class="input-group">
+                    <label class="input-label" for="pt-new-name">Full Name</label>
+                    <input type="text" id="pt-new-name" class="input-field" required placeholder="e.g., Tariq Al-Farsi">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    <div class="input-group">
+                        <label class="input-label" for="pt-new-age">Age</label>
+                        <input type="number" id="pt-new-age" class="input-field" required min="1" max="120" placeholder="e.g., 45">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" for="pt-new-gender">Gender</label>
+                        <select id="pt-new-gender" class="input-field" required>
+                            <option value="M">Male (M)</option>
+                            <option value="F">Female (F)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="pt-new-ward">Ward</label>
+                    <input type="text" id="pt-new-ward" class="input-field" required placeholder="e.g., ICU-1">
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="pt-new-condition">Condition Profile</label>
+                    <select id="pt-new-condition" class="input-field" required>
+                        <option value="normal">Normal (Stable Vitals)</option>
+                        <option value="tachycardia">Tachycardia (High HR)</option>
+                        <option value="bradycardia">Bradycardia (Low HR)</option>
+                        <option value="hypoxemia">Hypoxemia (Low SpO2)</option>
+                        <option value="tremor">Tremor (IMU Alerts)</option>
+                        <option value="high_stress">High Stress (GSR)</option>
+                        <option value="critical_multi">Critical Multi-System Failure</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shift Report Modal -->
+    <div id="shift-report-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Shift Report</h2>
+                <button id="btn-close-report" class="btn-close">&times;</button>
+            </div>
+            <div id="shift-report-content" style="max-height: 400px; overflow-y: auto; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+                Generating report...
+            </div>
+            <button class="btn btn-primary" id="btn-print-report" style="width: 100%; margin-top: 1rem;">Print / Export</button>
+        </div>
+    </div>
+
+    <!-- Shift Handoff Modal -->
+    <div id="shift-handoff-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Shift Handoff</h2>
+                <button id="btn-close-handoff" class="btn-close">&times;</button>
+            </div>
+            <div style="margin-bottom:1rem;">
+                <div style="display:flex; justify-content:space-between; padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:1rem;">
+                    <div><span style="color:var(--text-muted); font-size:0.8rem;">Current Doctor</span><br><strong id="handoff-current-doc">--</strong></div>
+                    <div style="text-align:right;"><span style="color:var(--text-muted); font-size:0.8rem;">Shift Started</span><br><strong id="handoff-shift-start">--</strong></div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Incoming Doctor Name</label>
+                <input type="text" id="handoff-new-doctor" class="input-field" placeholder="e.g., Dr. Ahmad Hassan" required>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Handoff Notes (optional)</label>
+                <textarea id="handoff-notes" class="input-field" rows="3" placeholder="Key items for the incoming doctor..."></textarea>
+            </div>
+            <button class="btn btn-primary" id="btn-start-new-shift" style="width:100%;">Start New Shift</button>
+        </div>
+    </div>
+
+    <!-- Patient Communication Modal -->
+    <div id="patient-comm-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Patient Communication</h2>
+                <button id="btn-close-comm" class="btn-close">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Select Patient</label>
+                <select id="comm-patient-select" class="input-field"></select>
+            </div>
+            <div class="comm-methods">
+                <div class="comm-method-card" id="comm-chat" style="cursor:pointer;">
+                    <div class="comm-icon">💬</div>
+                    <div class="comm-label">Chat</div>
+                    <div class="comm-desc">Send a text message</div>
+                </div>
+                <div class="comm-method-card" id="comm-call" style="cursor:pointer;">
+                    <div class="comm-icon">📞</div>
+                    <div class="comm-label">Call</div>
+                    <div class="comm-desc">Voice call patient</div>
+                </div>
+                <div class="comm-method-card" id="comm-notify" style="cursor:pointer;">
+                    <div class="comm-icon">🔔</div>
+                    <div class="comm-label">Notify</div>
+                    <div class="comm-desc">Push notification</div>
+                </div>
+            </div>
+            <div id="comm-panel" style="display:none; margin-top:1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analytics-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>Patient Analytics</h2>
+                <button id="btn-close-analytics" class="btn-close">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Select Patient</label>
+                <select id="analytics-patient-select" class="input-field"></select>
+            </div>
+            <div id="analytics-content" style="margin-top:1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel">
+            <div class="modal-header">
+                <h2>Application Settings</h2>
+                <button id="btn-close-settings" class="btn-close">&times;</button>
+            </div>
+            <div class="input-group">
+                <label class="input-label">UI Theme</label>
+                <select id="setting-theme" class="input-field">
+                    <option value="dark">Dark Mode (Medical Night)</option>
+                    <option value="light">Light Mode (Clinical Day)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Alert Sound Type</label>
+                <select id="setting-sound" class="input-field">
+                    <option value="urgent">Urgent Beep (High frequency)</option>
+                    <option value="gentle">Gentle Chime (Low frequency)</option>
+                    <option value="muted">Muted (Visual only)</option>
+                </select>
+            </div>
+            <h3 style="color:var(--text-secondary); font-size:0.9rem; margin:1rem 0 0.5rem; border-top:1px solid var(--border-subtle); padding-top:1rem;">AI Provider API Keys</h3>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem;">Add at least one key. The first configured provider will be used by default.</p>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#4285f4;">✦</span> Gemini API Key</label>
+                <input type="password" id="setting-gemini-key" class="input-field" placeholder="Paste Gemini key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent-teal);">Get key →</a></p>
+            </div>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#10a37f;">◉</span> OpenAI (ChatGPT) API Key</label>
+                <input type="password" id="setting-openai-key" class="input-field" placeholder="Paste OpenAI key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--accent-teal);">Get key →</a></p>
+            </div>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#d97706;">◈</span> Claude (Anthropic) API Key</label>
+                <input type="password" id="setting-claude-key" class="input-field" placeholder="Paste Claude key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://console.anthropic.com/" target="_blank" style="color:var(--accent-teal);">Get key →</a></p>
+            </div>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#6366f1;">◆</span> DeepSeek API Key</label>
+                <input type="password" id="setting-deepseek-key" class="input-field" placeholder="Paste DeepSeek key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://platform.deepseek.com/" target="_blank" style="color:var(--accent-teal);">Get key →</a></p>
+            </div>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#f97316;">⚡</span> Groq API Key <span style="color:#22c55e; font-size:0.7rem; font-weight:600;">(FREE)</span></label>
+                <input type="password" id="setting-groq-key" class="input-field" placeholder="Paste Groq key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent-teal);">Get free key →</a> (30 req/min, Llama 3.3 70B)</p>
+            </div>
+            <div class="input-group" style="margin-bottom:0.5rem;">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#22c55e;">⚡</span> Ollama (Local AI — FREE, No Key Needed)</label>
+                <div style="display:flex; align-items:center; gap:0.75rem; padding: 0.5rem 0;">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary);">
+                        <input type="checkbox" id="setting-ollama-enabled" style="accent-color:#22c55e; width:16px; height:16px;">
+                        Enable Ollama (Local)
+                    </label>
+                </div>
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Install from <a href="https://ollama.com/" target="_blank" style="color:var(--accent-teal);">ollama.com</a> → then run: <code style="background:var(--bg-surface); padding:0.1rem 0.3rem; border-radius:3px; font-family:var(--font-mono); font-size:0.9em;">ollama pull llama3.2</code></p>
+            </div>
+            <h3 style="color:var(--text-secondary); font-size:0.9rem; margin:1rem 0 0.5rem; border-top:1px solid var(--border-subtle); padding-top:1rem;">🎙 Alpha-Eon Voice (ElevenLabs)</h3>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem;">For the real JARVIS voice. Free tier: 10,000 chars/month.</p>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#a78bfa;">🔮</span> ElevenLabs API Key</label>
+                <input type="password" id="setting-elevenlabs-key" class="input-field" placeholder="Paste ElevenLabs key">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;"><a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:var(--accent-teal);">Get free key →</a></p>
+            </div>
+            <div class="input-group">
+                <label class="input-label" style="display:flex; align-items:center; gap:0.5rem;"><span style="color:#a78bfa;">🎭</span> Voice ID <span style="font-size:0.7rem; color:var(--text-muted);">(optional)</span></label>
+                <input type="text" id="setting-elevenlabs-voice" class="input-field" placeholder="Default: Daniel (British male, JARVIS-like)">
+                <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">Browse <a href="https://elevenlabs.io/voice-library" target="_blank" style="color:var(--accent-teal);">Voice Library →</a> to find a JARVIS voice. Copy the Voice ID and paste here.</p>
+            </div>
+            <button class="btn btn-primary" id="btn-save-settings" style="width: 100%;">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- Compare Modal -->
+    <div id="compare-modal" class="modal-overlay">
+        <div class="modal-content card glass-panel" style="max-width: 90%; width: 1200px;">
+            <div class="modal-header">
+                <h2>Compare Patients</h2>
+                <button id="btn-close-compare" class="btn-close">&times;</button>
+            </div>
+            <div id="compare-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-md); max-height: 70vh; overflow-y: auto; margin-top: 1rem;">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Batch Action Bar -->
+    <div id="compare-bar" class="glass-panel" style="position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-lg) var(--radius-lg) 0 0; display: flex; align-items: center; gap: var(--spacing-md); transition: bottom 0.3s ease; z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.5);">
+        <div style="color: var(--text-primary); font-weight: bold;"><span id="compare-count">0</span> Selected</div>
+        <select id="batch-action-select" class="input-field" style="width: auto; padding: 0.4rem 0.75rem; margin-bottom: 0;">
+            <option value="compare">Compare Vitals</option>
+            <option value="discharge">Discharge Patient(s)</option>
+            <option value="silence">Silence Alerts</option>
+        </select>
+        <button id="btn-apply-batch" class="btn btn-primary">Apply</button>
+        <button id="btn-clear-compare" class="btn btn-secondary">Clear</button>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="ai-chat-modal" class="modal-overlay ai-chat-modal">
+        <div class="modal-content card glass-panel">
+            <div class="ai-chat-header">
+                <div class="ai-chat-header-left">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1l-1 7H9l-1-7H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+                    <h2>Alpha1 AI</h2>
+                    <select id="ai-provider-select" class="input-field" style="width:auto; padding:0.2rem 0.5rem; font-size:0.75rem; margin:0; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:12px;"></select>
+                </div>
+                <div class="ai-chat-header-actions">
+                    <button class="btn btn-secondary btn-sm" id="btn-ai-clear" title="Clear conversation">Clear</button>
+                    <button id="btn-close-ai" class="btn-close">&times;</button>
+                </div>
+            </div>
+            <div class="ai-chat-body" id="ai-chat-body">
+                <!-- Welcome screen / messages injected by JS -->
+            </div>
+            <div class="ai-chat-input-area">
+                <textarea id="ai-chat-input" class="ai-chat-input" placeholder="Ask about diagnoses, treatments, drug interactions…" rows="1"></textarea>
+                <button id="ai-chat-send" class="ai-chat-send" title="Send message">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rehab Control Center Modal -->
+    <div class="modal-overlay" id="modal-rehab">
+        <div class="modal-content" style="max-width:700px; max-height:85vh; overflow-y:auto; border-radius:var(--radius-lg, 16px); border:1px solid var(--border-subtle, rgba(255,255,255,0.06)); padding:var(--spacing-lg, 1.5rem);">
+            <div class="modal-header">
+                <h2>🏥 Rehabilitation Control Center</h2>
+                <button class="modal-close" id="close-rehab">&times;</button>
+            </div>
+            <div style="padding:1.25rem;">
+                <div class="input-group" style="margin-bottom:1rem;">
+                    <label class="input-label">Select Patient</label>
+                    <select id="rehab-patient-select" class="input-field"></select>
+                </div>
+                <div id="rehab-status" style="margin-bottom:1.25rem;"></div>
+                <div class="card" style="padding:1rem; margin-bottom:1rem; background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.15);">
+                    <h3 style="font-size:0.85rem; color:#8b5cf6; margin-bottom:0.75rem;">📋 Session Configuration</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                        <div class="input-group"><label class="input-label">Total Sessions</label><input type="number" id="rehab-total-sessions" class="input-field" min="1" max="50" value="12"></div>
+                        <div class="input-group"><label class="input-label">Session Duration (min)</label><input type="number" id="rehab-session-duration" class="input-field" min="10" max="120" value="30"></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-top:0.75rem;">
+                        <div class="input-group"><label class="input-label">Days Between Sessions</label><input type="number" id="rehab-interval" class="input-field" min="1" max="14" value="3"></div>
+                        <div class="input-group"><label class="input-label">Start Date</label><input type="date" id="rehab-start-date" class="input-field"></div>
+                    </div>
+                    <button class="btn btn-primary" id="btn-create-rehab" style="width:100%; margin-top:1rem;">Create / Update Rehab Plan</button>
+                </div>
+                <div class="card" style="padding:1rem; margin-bottom:1rem;">
+                    <h3 style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem;">📊 Sessions Overview</h3>
+                    <div id="rehab-sessions-list" style="max-height:300px; overflow-y:auto;"></div>
+                </div>
+                <div class="card" style="padding:1rem;">
+                    <h3 style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem;">💬 Quick Message to Patient (Eris)</h3>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" id="rehab-quick-msg" class="input-field" placeholder="Type a message to the patient..." style="flex:1;">
+                        <button class="btn btn-primary btn-sm" id="btn-rehab-send-msg">Send</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-secondary btn-sm rehab-preset-msg" data-msg="Great progress today! Keep it up 💪">💪 Encourage</button>
+                        <button class="btn btn-secondary btn-sm rehab-preset-msg" data-msg="Your next session is coming up. Don't forget to rest well.">📅 Remind</button>
+                        <button class="btn btn-secondary btn-sm rehab-preset-msg" data-msg="Please check in with the clinic for your progress review.">🏥 Check-in</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="../www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/patients.js"></script>
+    <script src="js/doctor-helper.js"></script>
+    <!-- sensors.js removed: dashboard uses real Firebase data from ESP32 -->
+    <script src="js/charts.js"></script>
+    <script src="js/ai-chat.js"></script>
+    <script src="js/dashboard-app.js"></script>
+    <script src="js/alpha-eon.js"></script>
+
+    <!-- Alpha-Eon Full-Screen Voice Overlay -->
+    <div class="eon-overlay" id="eon-overlay">
+        <canvas class="eon-canvas-fullscreen" id="eon-canvas"></canvas>
+        <button class="eon-close" id="eon-close">&times;</button>
+
+        <!-- Provider selector (top-left) -->
+        <div class="eon-provider-bar">
+            <select class="eon-provider-select" id="eon-provider-select"></select>
+            <div class="eon-status-label" id="eon-status">ALPHA-EON READY</div>
+        </div>
+
+        <!-- Text output panel (bottom-left glass card) -->
+        <div class="eon-output-panel" id="eon-output-panel">
+            <div class="eon-transcript" id="eon-transcript"></div>
+            <div class="eon-response" id="eon-response"></div>
+        </div>
+
+        <!-- Mic Button (center-bottom) -->
+        <div class="eon-controls">
+            <button class="eon-mic-btn" id="eon-mic-btn" title="Click to speak">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+            </button>
+            <div class="eon-input-row">
+                <input type="text" class="eon-text-input" id="eon-text-input" placeholder="Type a command for Alpha-Eon...">
+                <button class="eon-input-send" id="eon-input-send" title="Send">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<!-- Mirrored from alpha1-10be6.web.app/dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:09:13 GMT -->
+</html>

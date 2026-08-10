@@ -1,17 +1,28 @@
-# HTTrack mirror directory (original pull)
-AlphaNULL/
-AlphaNULL.whtt
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# Cached font/CDN mirrors
-fonts.googleapis.com/
-fonts.gstatic.com/
-www.gstatic.com/
+# Testing
+coverage
 
-# Python / temp
-__pycache__/
-*.pyc
-clean.py
+# Production & Build outputs
+*.apk
+*.aab
+build/
+dist/
+.expo/
+android/
+ios/
 
-# OS
+# Misc
 .DS_Store
-Thumbs.db
+*.pem
+
+# Local env files
+.env*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

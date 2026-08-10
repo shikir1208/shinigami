@@ -1,0 +1,13 @@
+HTTrack3.49-2+htsswf+htsjava launched on Sun, 09 Aug 2026 08:08:46 at https://alpha1-10be6.web.app +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qYC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "en, *" -Y https://alpha1-10be6.web.app -O1 "C:\Users\igame\alpha1\AlphaNULL" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+08:09:03	Error: 	"Not Found" (404) at link https://fonts.googleapis.com/ (from https://alpha1-10be6.web.app/)
+08:09:04	Error: 	"Not Found" (404) at link https://fonts.gstatic.com/ (from https://alpha1-10be6.web.app/)
+
+HTTrack Website Copier/3.49-2 mirror complete in 32 seconds : 39 links scanned, 34 files written (2285754 bytes overall) [1294686 bytes received at 40458 bytes/sec], 1910459 bytes transferred using HTTP compression in 30 files, ratio 45%, 1.6 requests per connection
+(2 errors, 0 warnings, 0 messages)

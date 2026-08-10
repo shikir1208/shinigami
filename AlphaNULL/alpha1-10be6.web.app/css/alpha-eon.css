@@ -1,0 +1,280 @@
+/* ═══════════════════════════════════════════════════════════════
+   ALPHA-EON — JARVIS-Style Voice AI Assistant
+   Full-screen canvas particle engine
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('../../fonts.googleapis.com/css2722c.css?family=Orbitron:wght@400;500;700&amp;display=swap');
+
+/* ── Header Trigger Button ─────────────────────────────────── */
+.eon-header-btn {
+    position: relative;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.08)) !important;
+    border: 1px solid rgba(6, 182, 212, 0.25) !important;
+    color: #06b6d4 !important;
+    font-family: 'Orbitron', 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em !important;
+    font-size: 0.7rem !important;
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 0.5rem !important;
+    padding-right: 0.75rem !important;
+    overflow: visible;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.eon-header-btn:hover {
+    border-color: rgba(6, 182, 212, 0.5) !important;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.14), rgba(139, 92, 246, 0.1)) !important;
+}
+
+/* Particle burst on hover */
+.eon-header-btn::before {
+    content: '';
+    position: absolute;
+    left: 12px; top: 50%;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+    z-index: 10;
+}
+.eon-header-btn:hover::before { animation: eon-btn-particles 1.2s ease-out infinite; }
+.eon-header-btn::after {
+    content: '';
+    position: absolute;
+    left: 14px; top: 50%;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+    z-index: 10;
+}
+.eon-header-btn:hover::after { animation: eon-btn-particles-2 1.4s ease-out 0.2s infinite; }
+
+@keyframes eon-btn-particles {
+    0% { box-shadow: 0 0 0 0 rgba(6,182,212,0.8), 4px -2px 0 0 rgba(6,182,212,0.6), -3px 3px 0 0 rgba(139,92,246,0.6), 6px 1px 0 0 rgba(6,182,212,0.5), -5px -3px 0 0 rgba(139,92,246,0.5), 2px 4px 0 0 rgba(6,182,212,0.4), -4px -1px 0 0 rgba(6,182,212,0.7), 7px 3px 0 0 rgba(139,92,246,0.4); }
+    50% { box-shadow: 12px -8px 0 0 rgba(6,182,212,0.5), 18px -12px 0 0 rgba(6,182,212,0.3), -14px 10px 0 0 rgba(139,92,246,0.3), 22px 6px 0 0 rgba(6,182,212,0.2), -18px -14px 0 0 rgba(139,92,246,0.2), 8px 16px 0 0 rgba(6,182,212,0.3), -20px -5px 0 0 rgba(6,182,212,0.4), 25px 10px 0 0 rgba(139,92,246,0.2); }
+    100% { box-shadow: 24px -16px 0 -1px rgba(6,182,212,0), 35px -22px 0 -1px rgba(6,182,212,0), -28px 20px 0 -1px rgba(139,92,246,0), 40px 12px 0 -1px rgba(6,182,212,0), -35px -28px 0 -1px rgba(139,92,246,0), 16px 30px 0 -1px rgba(6,182,212,0), -38px -10px 0 -1px rgba(6,182,212,0), 45px 18px 0 -1px rgba(139,92,246,0); }
+}
+@keyframes eon-btn-particles-2 {
+    0% { box-shadow: -2px 0 0 0 rgba(6,182,212,0.7), 3px -4px 0 0 rgba(139,92,246,0.7), -6px 2px 0 0 rgba(6,182,212,0.6), 5px 5px 0 0 rgba(139,92,246,0.5), -1px -5px 0 0 rgba(6,182,212,0.6); }
+    50% { box-shadow: -10px 5px 0 0 rgba(6,182,212,0.4), 15px -15px 0 0 rgba(139,92,246,0.3), -20px 8px 0 0 rgba(6,182,212,0.3), 18px 18px 0 0 rgba(139,92,246,0.2), -6px -20px 0 0 rgba(6,182,212,0.3); }
+    100% { box-shadow: -22px 12px 0 -1px rgba(6,182,212,0), 30px -28px 0 -1px rgba(139,92,246,0), -38px 15px 0 -1px rgba(6,182,212,0), 35px 32px 0 -1px rgba(139,92,246,0), -12px -38px 0 -1px rgba(6,182,212,0); }
+}
+
+/* Mini orb inside the button */
+.eon-btn-orb { width: 22px; height: 22px; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.eon-btn-core { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #0f2030, #060c14); border: 1.5px solid rgba(6,182,212,0.5); box-shadow: 0 0 8px rgba(6,182,212,0.35), 0 0 20px rgba(6,182,212,0.12), inset 0 0 6px rgba(6,182,212,0.15); position: relative; z-index: 3; transition: all 0.3s; }
+.eon-header-btn:hover .eon-btn-core { border-color: rgba(6,182,212,0.9); box-shadow: 0 0 12px rgba(6,182,212,0.5), 0 0 30px rgba(6,182,212,0.2), inset 0 0 10px rgba(6,182,212,0.2); }
+.eon-btn-core::after { content: ''; position: absolute; top: 25%; left: 30%; width: 4px; height: 4px; border-radius: 50%; background: radial-gradient(circle, rgba(6,182,212,0.7), transparent 70%); filter: blur(1.5px); animation: eon-core-glow 3s ease-in-out infinite; }
+.eon-btn-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(6,182,212,0.25); animation: eon-ring-pulse 3s ease-out infinite; z-index: 1; }
+.eon-btn-beam { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 36px; height: 1.5px; background: linear-gradient(90deg, transparent, rgba(6,182,212,0.5) 25%, rgba(6,182,212,0.9) 50%, rgba(6,182,212,0.5) 75%, transparent); z-index: 2; animation: eon-beam-pulse 3s ease-in-out infinite; }
+.eon-header-btn:hover .eon-btn-beam { width: 44px; box-shadow: 0 0 8px rgba(6,182,212,0.4); }
+
+/* ═══════════════════════════════════════════════════════════════
+   FULL-SCREEN OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+.eon-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: transparent;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.eon-overlay.active { opacity: 1; pointer-events: all; }
+
+.eon-canvas-fullscreen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+}
+
+/* Close button */
+.eon-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.4);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    z-index: 5;
+}
+.eon-close:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2); }
+
+/* ── Provider Bar (top-left) ──────────────────────────────── */
+.eon-provider-bar {
+    position: absolute;
+    top: 1.5rem; left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 5;
+}
+.eon-provider-select {
+    background: rgba(2, 6, 14, 0.6);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    color: rgba(6, 182, 212, 0.8);
+    font-family: 'Orbitron', 'Inter', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2306b6d4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    padding-right: 2rem;
+}
+.eon-provider-select:hover {
+    border-color: rgba(6, 182, 212, 0.5);
+    background-color: rgba(2, 6, 14, 0.8);
+}
+.eon-provider-select option {
+    background: #0a0f1a;
+    color: #06b6d4;
+}
+.eon-status-label {
+    font-family: 'Orbitron', 'Inter', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    color: rgba(6, 182, 212, 0.5);
+    text-transform: uppercase;
+    transition: color 0.3s;
+}
+.eon-overlay.state-listening .eon-status-label { color: rgba(6,182,212,0.9); }
+.eon-overlay.state-thinking .eon-status-label { color: rgba(139,92,246,0.8); }
+.eon-overlay.state-speaking .eon-status-label { color: rgba(6,182,212,1); }
+
+/* ── Output Panel (bottom-left glass card) ────────────────── */
+.eon-output-panel {
+    position: absolute;
+    bottom: 7rem; left: 1.5rem;
+    width: min(420px, 40vw);
+    max-height: 50vh;
+    background: rgba(2, 6, 14, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(6, 182, 212, 0.1);
+    border-radius: 16px;
+    padding: 1.25rem;
+    z-index: 4;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s, transform 0.4s;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6,182,212,0.15) transparent;
+}
+.eon-output-panel::-webkit-scrollbar { width: 3px; }
+.eon-output-panel::-webkit-scrollbar-track { background: transparent; }
+.eon-output-panel::-webkit-scrollbar-thumb { background: rgba(6,182,212,0.15); border-radius: 2px; }
+/* Show panel only when there's content */
+.eon-output-panel.has-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.eon-transcript {
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.6;
+    transition: color 0.3s;
+}
+.eon-overlay.state-listening .eon-transcript { color: rgba(255,255,255,0.8); }
+
+.eon-response {
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    font-size: 0.9rem;
+    color: rgba(6, 182, 212, 0.85);
+    line-height: 1.7;
+    margin-top: 0.5rem;
+}
+
+/* ── Controls (bottom center) ─────────────────────────────── */
+.eon-controls {
+    position: absolute;
+    bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 5;
+}
+
+.eon-mic-btn {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(6,182,212,0.06);
+    border: 1px solid rgba(6,182,212,0.2);
+    color: rgba(6,182,212,0.6);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+}
+.eon-mic-btn:hover { background: rgba(6,182,212,0.12); color: #06b6d4; box-shadow: 0 0 20px rgba(6,182,212,0.15); }
+.eon-mic-btn.active { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.5); color: #06b6d4; animation: eon-mic-pulse 1.5s ease-in-out infinite; }
+
+.eon-input-row {
+    display: flex; gap: 0.5rem;
+    width: min(500px, 85vw);
+}
+.eon-text-input {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(6,182,212,0.15);
+    border-radius: 999px;
+    padding: 0.6rem 1.2rem;
+    color: #f8fafc;
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.3s;
+}
+.eon-text-input::placeholder { color: rgba(255,255,255,0.15); }
+.eon-text-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(6,182,212,0.08); }
+.eon-input-send {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(6,182,212,0.08);
+    border: 1px solid rgba(6,182,212,0.2);
+    color: #06b6d4;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+}
+.eon-input-send:hover { background: rgba(6,182,212,0.15); box-shadow: 0 0 15px rgba(6,182,212,0.2); }
+
+/* ── Keyframes ────────────────────────────────────────────── */
+@keyframes eon-beam-pulse { 0%,100% { opacity: 0.5; transform: translate(-50%,-50%) scaleX(0.8); } 50% { opacity: 1; transform: translate(-50%,-50%) scaleX(1); } }
+@keyframes eon-ring-pulse { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.4; } 100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; } }
+@keyframes eon-core-glow { 0%,100% { opacity: 0.5; filter: blur(1.5px); } 50% { opacity: 1; filter: blur(2.5px); } }
+@keyframes eon-mic-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.4); } 50% { box-shadow: 0 0 0 12px rgba(6,182,212,0); } }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .eon-output-panel {
+        width: calc(100vw - 3rem);
+        left: 1.5rem; right: 1.5rem;
+        bottom: 8rem;
+        max-height: 30vh;
+    }
+}

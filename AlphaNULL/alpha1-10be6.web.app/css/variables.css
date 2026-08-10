@@ -1,0 +1,101 @@
+:root {
+    /* Colors - Dark Mode Medical Theme */
+    --bg-main: #0a0e1a;
+    --bg-card: rgba(17, 24, 39, 0.65);
+    --bg-card-hover: rgba(30, 41, 59, 0.85);
+    --bg-glass: rgba(15, 23, 42, 0.65);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    
+    /* Text Colors */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Status Colors */
+    --color-normal: #10b981;
+    --color-normal-bg: rgba(16, 185, 129, 0.15);
+    
+    --color-warning: #f59e0b;
+    --color-warning-bg: rgba(245, 158, 11, 0.15);
+    
+    --color-critical: #ef4444;
+    --color-critical-bg: rgba(239, 68, 68, 0.15);
+    
+    /* Accents */
+    --accent-teal: #06b6d4;
+    --accent-teal-glow: rgba(6, 182, 212, 0.4);
+
+    /* Typography */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Shadows & Effects */
+    --shadow-glow: 0 0 15px var(--accent-teal-glow);
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px var(--accent-teal-glow);
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Mesh Gradient */
+    --mesh-1: #0a0e1a;
+    --mesh-2: #111827;
+    --mesh-3: #0f172a;
+    --mesh-4: #083344;
+
+    /* Surface colors */
+    --bg-surface: rgba(0, 0, 0, 0.2);
+    --bg-surface-deep: rgba(0, 0, 0, 0.3);
+    --bg-header: rgba(17, 24, 39, 0.8);
+    --bg-chart: #050810;
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+}
+
+:root[data-theme="light"] {
+    --bg-main: #f0f4f8;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(241, 245, 249, 0.95);
+    --bg-glass: rgba(255, 255, 255, 0.75);
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+
+    --color-normal: #059669;
+    --color-normal-bg: rgba(5, 150, 105, 0.12);
+    --color-warning: #d97706;
+    --color-warning-bg: rgba(217, 119, 6, 0.12);
+    --color-critical: #dc2626;
+    --color-critical-bg: rgba(220, 38, 38, 0.12);
+    
+    --accent-teal: #0891b2;
+    --accent-teal-glow: rgba(8, 145, 178, 0.25);
+
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --shadow-card-hover: 0 15px 35px rgba(0,0,0,0.1), 0 0 15px var(--accent-teal-glow);
+
+    /* Mesh Gradient - soft light blues */
+    --mesh-1: #e0f2fe;
+    --mesh-2: #f0f9ff;
+    --mesh-3: #e8f4f8;
+    --mesh-4: #f0fdfa;
+
+    /* Surface colors */
+    --bg-surface: rgba(0, 0, 0, 0.04);
+    --bg-surface-deep: rgba(0, 0, 0, 0.06);
+    --bg-header: rgba(255, 255, 255, 0.85);
+    --bg-chart: #f1f5f9;
+    --modal-overlay: rgba(0, 0, 0, 0.4);
+}

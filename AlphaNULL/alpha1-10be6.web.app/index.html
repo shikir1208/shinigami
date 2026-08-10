@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from alpha1-10be6.web.app/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:08:50 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha 1 - Clinical Authentication</title>
+    <link rel="preconnect" href="../fonts.googleapis.com/index.html">
+    <link rel="preconnect" href="../fonts.gstatic.com/index.html" crossorigin>
+    <link href="../fonts.googleapis.com/css2fb67.css?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <canvas id="particles-bg" class="login-particles"></canvas>
+        <div class="ecg-background"></div>
+        <div class="ecg-background ecg-bg-2"></div>
+        
+        <div class="login-card glass-panel">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                <h1>Alpha <span>1</span></h1>
+            </div>
+            <p class="login-tagline">Next-Generation Clinical Intelligence</p>
+            
+            <form id="login-form" class="login-form">
+                <div class="input-group">
+                    <label class="input-label" for="username">Doctor ID / Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Enter ID" required autocomplete="username">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="password">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary login-btn">Secure Login</button>
+                
+                <div class="demo-hint">
+                    Demo Mode: Enter any username/password to continue.
+                </div>
+            </form>
+
+            <div class="login-features">
+                <div class="login-feature-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Real-time Monitoring
+                </div>
+                <div class="login-feature-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1l-1 7H9l-1-7H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/></svg>
+                    AI Diagnostics
+                </div>
+                <div class="login-feature-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Multi-Sensor Fusion
+                </div>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <span>v2.4.1</span>
+            <span class="login-footer-dot">•</span>
+            <span>HIPAA Compliant</span>
+            <span class="login-footer-dot">•</span>
+            <span>256-bit AES Encryption</span>
+        </div>
+    </div>
+
+    <script src="../www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="../www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if (Auth.login(user, pass)) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+        if (Auth.isAuthenticated()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Particle network background
+        (function() {
+            var cv = document.getElementById('particles-bg');
+            if (!cv) return;
+            var ctx = cv.getContext('2d');
+            var W, H;
+            function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            var particles = [];
+            for (var i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * (W||1000), y: Math.random() * (H||800),
+                    vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+                    r: 1.5 + Math.random() * 1.5, o: 0.15 + Math.random() * 0.2
+                });
+            }
+            function loop() {
+                requestAnimationFrame(loop);
+                ctx.clearRect(0, 0, W, H);
+                for (var i = 0; i < particles.length; i++) {
+                    var p = particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+                    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, 6.28);
+                    ctx.fillStyle = 'rgba(6,182,212,' + p.o + ')';
+                    ctx.fill();
+                    for (var j = i + 1; j < particles.length; j++) {
+                        var p2 = particles[j];
+                        var dx = p.x - p2.x, dy = p.y - p2.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 150) {
+                            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = 'rgba(6,182,212,' + (0.06 * (1 - dist / 150)) + ')';
+                            ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                }
+            }
+            loop();
+        })();
+    </script>
+</body>
+
+<!-- Mirrored from alpha1-10be6.web.app/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:09:02 GMT -->
+</html>

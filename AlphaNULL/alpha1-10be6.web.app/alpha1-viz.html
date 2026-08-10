@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from alpha1-10be6.web.app/alpha1-viz.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:09:15 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA1 — Neural Core Visualization</title>
+    <link rel="preconnect" href="../fonts.googleapis.com/index.html">
+    <link rel="preconnect" href="../fonts.gstatic.com/index.html" crossorigin>
+    <link href="../fonts.googleapis.com/css2d810.css?family=Orbitron:wght@400;500;700;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#020408;color:#e2e8f0;font-family:'Inter',sans-serif;overflow-x:hidden;cursor:grab;user-select:none}
+        body.dragging{cursor:grabbing}
+        .sec1{position:relative;width:100%;height:100vh;overflow:hidden}
+        #c{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+        .scan{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.03) 0px,rgba(0,0,0,0.03) 1px,transparent 1px,transparent 3px)}
+        .vig{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,0.75) 100%)}
+        .hud{position:fixed;z-index:10;pointer-events:none;font-family:'JetBrains Mono',monospace}
+        .hud-top{top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 2rem}
+        .hud-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:.15em;color:#06b6d4;text-shadow:0 0 20px rgba(6,182,212,0.5),0 0 60px rgba(6,182,212,0.2)}
+        .hud-title .sub{display:block;font-size:.55rem;font-weight:400;letter-spacing:.4em;color:rgba(6,182,212,0.6);margin-top:.25rem;font-family:'JetBrains Mono',monospace}
+        .hud-status{text-align:right;font-size:.7rem;color:rgba(6,182,212,0.7);line-height:1.8}
+        .live{display:inline-flex;align-items:center;gap:.4rem;color:#10b981}
+        .live::before{content:'';width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:blink 1.5s infinite}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+        .hud-bottom{bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;padding:1.5rem 2rem}
+        .hud-metrics{display:flex;gap:2rem;font-size:.65rem;color:rgba(6,182,212,0.5);text-transform:uppercase;letter-spacing:.1em}
+        .mv{font-size:1.1rem;font-weight:700;color:#06b6d4;font-family:'Orbitron',sans-serif;display:block;margin-top:.2rem;text-shadow:0 0 10px rgba(6,182,212,0.4)}
+        .hud-back{pointer-events:auto;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);color:#06b6d4;padding:.5rem 1.2rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.1em}
+        .hud-back:hover{background:rgba(6,182,212,0.2);box-shadow:0 0 20px rgba(6,182,212,0.3)}
+        .corner{position:fixed;width:40px;height:40px;z-index:10;pointer-events:none}
+        .corner::before,.corner::after{content:'';position:absolute;background:rgba(6,182,212,0.3)}
+        .c-tl{top:1rem;left:1rem}.c-tl::before{top:0;left:0;width:20px;height:2px}.c-tl::after{top:0;left:0;width:2px;height:20px}
+        .c-tr{top:1rem;right:1rem}.c-tr::before{top:0;right:0;width:20px;height:2px}.c-tr::after{top:0;right:0;width:2px;height:20px}
+        .c-bl{bottom:1rem;left:1rem}.c-bl::before{bottom:0;left:0;width:20px;height:2px}.c-bl::after{bottom:0;left:0;width:2px;height:20px}
+        .c-br{bottom:1rem;right:1rem}.c-br::before{bottom:0;right:0;width:20px;height:2px}.c-br::after{bottom:0;right:0;width:2px;height:20px}
+        .clabel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:8;text-align:center;pointer-events:none;opacity:0;transition:opacity .8s}
+        .clabel.show{opacity:1}
+        .clabel h2{font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:.3em;color:rgba(6,182,212,0.4);text-transform:uppercase;margin-bottom:.5rem}
+        .clabel .ctext{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;letter-spacing:.1em;background:linear-gradient(90deg,#06b6d4,#8b5cf6,#06b6d4);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gs 3s linear infinite;filter:drop-shadow(0 0 30px rgba(6,182,212,0.3))}
+        @keyframes gs{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+        .hint{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:10;pointer-events:none;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(6,182,212,0.3);letter-spacing:.15em;animation:fh 6s forwards}
+        @keyframes fh{0%,60%{opacity:1}100%{opacity:0}}
+        #err{position:fixed;top:0;left:0;right:0;background:red;color:#fff;padding:1rem;z-index:9999;font-family:monospace;white-space:pre-wrap;display:none}
+
+        /* Scroll down button */
+        .scroll-btn{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:20;pointer-events:auto;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.25);color:rgba(6,182,212,0.7);padding:.6rem 1.5rem;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:.7rem;cursor:pointer;letter-spacing:.15em;transition:all .3s;display:flex;align-items:center;gap:.5rem;text-decoration:none}
+        .scroll-btn:hover{background:rgba(6,182,212,0.15);color:#06b6d4;box-shadow:0 0 25px rgba(6,182,212,0.2)}
+        .scroll-btn svg{animation:bounceDown 1.5s infinite}
+        @keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+        /* Section 2 — Neural Net Deep Dive */
+        .sec2{position:relative;width:100%;min-height:100vh;background:#020408;z-index:30;border-top:1px solid rgba(6,182,212,0.1)}
+        #nn-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+        .sec2-overlay{position:relative;z-index:1;pointer-events:none}
+
+        .sec2-header{text-align:center;padding:3rem 2rem 1rem}
+        .sec2-header h1{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;letter-spacing:.15em;color:#06b6d4;text-shadow:0 0 30px rgba(6,182,212,0.4)}
+        .sec2-header .sec2-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:rgba(6,182,212,0.4);letter-spacing:.35em;margin-top:.5rem}
+
+        .nn-labels{position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;pointer-events:none;font-family:'JetBrains Mono',monospace}
+        .nn-layer-label{position:absolute;top:5.5rem;font-size:.5rem;color:rgba(6,182,212,0.35);letter-spacing:.1em;text-align:center;width:80px;margin-left:-40px;text-transform:uppercase}
+
+        .data-panels{display:flex;justify-content:space-between;position:absolute;bottom:0;left:0;right:0;z-index:2;pointer-events:none;padding:1.5rem 2rem}
+        .data-panel{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:rgba(6,182,212,0.3);line-height:1.6;max-width:250px}
+        .data-panel .dp-title{font-family:'Orbitron',sans-serif;font-size:.6rem;color:rgba(6,182,212,0.5);letter-spacing:.2em;margin-bottom:.5rem;border-bottom:1px solid rgba(6,182,212,0.1);padding-bottom:.3rem}
+        .data-panel .dp-val{color:rgba(6,182,212,0.5)}
+        .data-panel .dp-hi{color:rgba(16,185,129,0.6)}
+        .data-panel .dp-lo{color:rgba(244,63,94,0.5)}
+
+        .sec2-footer{text-align:center;padding:1rem 2rem 2rem;position:relative;z-index:3}
+        .back-top{pointer-events:auto;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);color:rgba(6,182,212,0.6);padding:.5rem 1.2rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.7rem;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.1em}
+        .back-top:hover{background:rgba(6,182,212,0.15);color:#06b6d4}
+
+        /* Data streams */
+        .dstream{position:fixed;z-index:5;font-family:'JetBrains Mono',monospace;font-size:.5rem;line-height:1.35;pointer-events:none;overflow:hidden;white-space:pre;color:rgba(6,182,212,0.12)}
+        .ds-l{top:5rem;left:.6rem;bottom:5rem;width:100px}
+        .ds-r{top:5rem;right:.6rem;bottom:5rem;width:100px;text-align:right}
+
+        /* HUD border panels */
+        .hud-border{position:fixed;z-index:4;pointer-events:none}
+        .hud-border-top{top:3.5rem;left:2rem;right:2rem;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,0.15) 20%,rgba(6,182,212,0.15) 80%,transparent)}
+        .hud-border-bot{bottom:3.5rem;left:2rem;right:2rem;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,0.15) 20%,rgba(6,182,212,0.15) 80%,transparent)}
+        .hud-border-left{top:4rem;left:7rem;bottom:4rem;width:1px;background:linear-gradient(180deg,transparent,rgba(6,182,212,0.08) 20%,rgba(6,182,212,0.08) 80%,transparent)}
+        .hud-border-right{top:4rem;right:7rem;bottom:4rem;width:1px;background:linear-gradient(180deg,transparent,rgba(6,182,212,0.08) 20%,rgba(6,182,212,0.08) 80%,transparent)}
+
+        /* Side info panels */
+        .side-panel{position:fixed;z-index:6;pointer-events:none;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:rgba(6,182,212,0.3);letter-spacing:.05em;line-height:1.8}
+        .sp-left{top:50%;left:7.5rem;transform:translateY(-50%)}
+        .sp-right{top:50%;right:7.5rem;transform:translateY(-50%);text-align:right}
+        .sp-val{color:rgba(6,182,212,0.55);font-weight:700}
+        .sp-bar{display:inline-block;height:3px;background:rgba(6,182,212,0.2);border-radius:2px;vertical-align:middle;margin-left:4px;transition:width .3s}
+        .sp-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#06b6d4,#8b5cf6)}
+    </style>
+</head>
+<body>
+    <div class="sec1" id="sec1">
+    <canvas id="c"></canvas>
+    <div class="scan"></div>
+    <div class="vig"></div>
+    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+    <div class="corner c-bl"></div><div class="corner c-br"></div>
+    <div id="err"></div>
+
+    <!-- HUD Border Lines -->
+    <div class="hud-border hud-border-top"></div>
+    <div class="hud-border hud-border-bot"></div>
+    <div class="hud-border hud-border-left"></div>
+    <div class="hud-border hud-border-right"></div>
+
+    <!-- Data Streams -->
+    <div class="dstream ds-l" id="ds-l"></div>
+    <div class="dstream ds-r" id="ds-r"></div>
+
+    <!-- Side Info Panels -->
+    <div class="side-panel sp-left" id="sp-left"></div>
+    <div class="side-panel sp-right" id="sp-right"></div>
+
+    <div class="hud hud-top">
+        <div class="hud-title">ALPHA1<span class="sub">NEURAL PROCESSING CORE v3.7.1</span></div>
+        <div class="hud-status">
+            <div class="live">SYSTEM ONLINE</div>
+            <div id="hud-time">00:00:00</div>
+            <div>CLEARANCE: LEVEL 5</div>
+            <div style="color:rgba(139,92,246,0.5)">SECTOR 7-G ACTIVE</div>
+        </div>
+    </div>
+    <div class="hud hud-bottom">
+        <div class="hud-metrics">
+            <div>Throughput<span class="mv" id="m-tp">0</span></div>
+            <div>Active Nodes<span class="mv" id="m-an">0</span></div>
+            <div>Synapses<span class="mv" id="m-sy">0</span></div>
+            <div>Latency<span class="mv" id="m-lt">0ms</span></div>
+            <div>Confidence<span class="mv" id="m-cf">0%</span></div>
+            <div>Entropy<span class="mv" id="m-en">0</span></div>
+        </div>
+        <a href="dashboard.html" class="hud-back">&#8592; RETURN TO DASHBOARD</a>
+    </div>
+    <div class="clabel" id="clabel">
+        <h2>Classification Output</h2>
+        <div class="ctext" id="ctext">INITIALIZING</div>
+    </div>
+    <div class="hint">CLICK &amp; DRAG TO ROTATE &middot; SCROLL TO ZOOM</div>
+
+    <a href="#sec2" class="scroll-btn" id="scroll-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        NEURAL ARCHITECTURE
+    </a>
+    </div><!-- end sec1 -->
+
+    <!-- Section 2: Neural Net Deep Dive -->
+    <div class="sec2" id="sec2">
+        <canvas id="nn-canvas"></canvas>
+        <div class="sec2-overlay">
+            <div class="sec2-header">
+                <h1>NEURAL ARCHITECTURE</h1>
+                <div class="sec2-sub">ALPHA1 INFERENCE PIPELINE &mdash; 9-LAYER DENSE NETWORK &mdash; 86 PROCESSING UNITS</div>
+            </div>
+        </div>
+        <div class="nn-labels" id="nn-labels"></div>
+        <div class="data-panels">
+            <div class="data-panel" id="dp-left">
+                <div class="dp-title">MODEL ARCHITECTURE</div>
+            </div>
+            <div class="data-panel" id="dp-center" style="text-align:center;max-width:300px">
+                <div class="dp-title">INFERENCE METRICS</div>
+            </div>
+            <div class="data-panel" id="dp-right" style="text-align:right">
+                <div class="dp-title">WEIGHT DISTRIBUTION</div>
+            </div>
+        </div>
+        <div class="sec2-footer">
+            <a href="#sec1" class="back-top">&#8593; BACK TO NEURAL CORE</a>
+        </div>
+    </div>
+
+<script>
+window.onerror = function(msg, url, line) {
+    var e = document.getElementById('err');
+    e.style.display = 'block';
+    e.textContent = 'ERROR: ' + msg + ' (line ' + line + ')';
+};
+
+(function() {
+    var cv = document.getElementById('c');
+    var ctx = cv.getContext('2d');
+    var W, H;
+    function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Camera
+    var camRX = -0.3, camRY = 0.5;
+    var zoomVal = 1.0;
+    var isDrag = false, prevMX = 0, prevMY = 0;
+
+    cv.addEventListener('mousedown', function(e) { isDrag = true; prevMX = e.clientX; prevMY = e.clientY; document.body.classList.add('dragging'); });
+    window.addEventListener('mouseup', function() { isDrag = false; document.body.classList.remove('dragging'); });
+    window.addEventListener('mousemove', function(e) {
+        if (!isDrag) return;
+        camRY += (e.clientX - prevMX) * 0.005;
+        camRX += (e.clientY - prevMY) * 0.005;
+        prevMX = e.clientX; prevMY = e.clientY;
+    });
+    cv.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        zoomVal = Math.max(0.3, Math.min(3, zoomVal - e.deltaY * 0.0008));
+    }, { passive: false });
+
+    // Touch
+    cv.addEventListener('touchstart', function(e) { if (e.touches.length === 1) { isDrag = true; prevMX = e.touches[0].clientX; prevMY = e.touches[0].clientY; } }, { passive: true });
+    window.addEventListener('touchend', function() { isDrag = false; });
+    window.addEventListener('touchmove', function(e) {
+        if (!isDrag || e.touches.length !== 1) return;
+        camRY += (e.touches[0].clientX - prevMX) * 0.005;
+        camRX += (e.touches[0].clientY - prevMY) * 0.005;
+        prevMX = e.touches[0].clientX; prevMY = e.touches[0].clientY;
+    }, { passive: true });
+
+    // 3D helpers
+    var FOCAL = 600;
+    function project(x, y, z) {
+        // Rotate X
+        var cosA = Math.cos(camRX), sinA = Math.sin(camRX);
+        var y1 = y * cosA - z * sinA;
+        var z1 = y * sinA + z * cosA;
+        // Rotate Y
+        var cosB = Math.cos(camRY), sinB = Math.sin(camRY);
+        var x1 = x * cosB + z1 * sinB;
+        var z2 = -x * sinB + z1 * cosB;
+        // Project
+        var s = (FOCAL * zoomVal) / (FOCAL + z2);
+        return { sx: W * 0.5 + x1 * s, sy: H * 0.5 + y1 * s, z: z2, s: s };
+    }
+
+    // Colors
+    function rgba(r, g, b, a) { return 'rgba(' + (r|0) + ',' + (g|0) + ',' + (b|0) + ',' + a + ')'; }
+
+    // Build cube of nodes
+    var GRID = 8;
+    var SP = 48;
+    var nodes = [];
+    var edges = [];
+    var half = (GRID - 1) / 2;
+
+    for (var ix = 0; ix < GRID; ix++) {
+        for (var iy = 0; iy < GRID; iy++) {
+            for (var iz = 0; iz < GRID; iz++) {
+                var nx = (ix - half) * SP;
+                var ny = (iy - half) * SP;
+                var nz = (iz - half) * SP;
+                var d = Math.sqrt(nx*nx + ny*ny + nz*nz);
+                var maxD = half * SP;
+                if (d > maxD * 1.1) continue; // spherical clip
+
+                var t = d / maxD;
+                // Color: teal at center -> purple at edge
+                var cr = 6 + (139 - 6) * t;
+                var cg = 182 + (92 - 182) * t;
+                var cb = 212 + (246 - 212) * t;
+                nodes.push({
+                    x: nx, y: ny, z: nz,
+                    cr: cr, cg: cg, cb: cb,
+                    energy: 0.1 + Math.random() * 0.2,
+                    phase: Math.random() * 6.28,
+                    spd: 0.4 + Math.random() * 1.2
+                });
+            }
+        }
+    }
+
+    // Edges between nearby nodes
+    for (var i = 0; i < nodes.length; i++) {
+        for (var j = i + 1; j < nodes.length; j++) {
+            var ddx = nodes[i].x - nodes[j].x;
+            var ddy = nodes[i].y - nodes[j].y;
+            var ddz = nodes[i].z - nodes[j].z;
+            var dd = Math.sqrt(ddx*ddx + ddy*ddy + ddz*ddz);
+            if (dd < SP * 1.15) {
+                edges.push({ a: i, b: j, glow: 0 });
+            }
+        }
+    }
+
+    // Data particles
+    var packets = [];
+    function spawnPackets() {
+        if (edges.length === 0) return;
+        var count = 2 + (Math.random() * 4) | 0;
+        for (var i = 0; i < count; i++) {
+            var ei = (Math.random() * edges.length) | 0;
+            var dir = Math.random() < 0.5 ? 1 : -1;
+            // Pick a color
+            var colors = [[6,182,212],[16,185,129],[139,92,246],[245,158,11],[244,63,94]];
+            var c = colors[(Math.random() * colors.length) | 0];
+            packets.push({ ei: ei, t: dir > 0 ? 0 : 1, dir: dir, speed: 0.006 + Math.random() * 0.014, cr: c[0], cg: c[1], cb: c[2], sz: 1.5 + Math.random() * 2 });
+            edges[ei].glow = 1;
+        }
+    }
+
+    // Dust
+    var dust = [];
+    for (var i = 0; i < 120; i++) {
+        var r = 350 + Math.random() * 350;
+        var th = Math.random() * 6.28;
+        var ph = Math.random() * 3.14;
+        var dc = Math.random() < 0.5 ? [6,182,212] : [139,92,246];
+        dust.push({ x: r*Math.sin(ph)*Math.cos(th), y: r*Math.sin(ph)*Math.sin(th), z: r*Math.cos(ph), a: 0.04 + Math.random()*0.12, sz: 0.5 + Math.random()*1.5, cr: dc[0], cg: dc[1], cb: dc[2], orb: 0.0003 + Math.random()*0.0006 });
+    }
+
+    // Pulse rings
+    var rings = [];
+    var ringTimer = 0;
+
+    // Classification
+    var clsList = ['PATIENT STABLE','TACHYCARDIA DETECTED','NORMAL SINUS RHYTHM','ANALYZING WAVEFORM',
+        'CROSS-REFERENCING','PATTERN MATCH 99.2%','NEURAL SYNC ACTIVE','DEEP SCAN COMPLETE',
+        'VITALS NOMINAL','CORRELATING DATA','RISK ASSESSMENT: LOW','MODEL INFERENCE OK'];
+    var clsIdx = 0;
+
+    // Timers
+    var spawnTimer = 0;
+    var frame = 0;
+
+    // --- Mouse trail ---
+    var mouseTrail = [];
+    var mouseX = W / 2, mouseY = H / 2;
+    cv.addEventListener('mousemove', function(e) { mouseX = e.clientX; mouseY = e.clientY; });
+
+    // --- Data Highways (2D screen-space flowing lines) ---
+    var highways = [];
+    function buildHighways() {
+        highways = [];
+        // Create flowing data roads from edges of screen converging toward center
+        var count = 10;
+        for (var i = 0; i < count; i++) {
+            var angle = (i / count) * 6.28 + 0.3;
+            var startR = Math.max(W, H) * 0.7;
+            var sx = W/2 + Math.cos(angle) * startR;
+            var sy = H/2 + Math.sin(angle) * startR;
+            // Create waypoints with bends
+            var pts = [];
+            var segments = 4 + ((Math.random() * 3) | 0);
+            for (var s = 0; s <= segments; s++) {
+                var frac = s / segments;
+                var x = sx + (W/2 - sx) * frac + (Math.random() - 0.5) * 120 * (1 - frac);
+                var y = sy + (H/2 - sy) * frac + (Math.random() - 0.5) * 120 * (1 - frac);
+                pts.push({ x: x, y: y });
+            }
+            var colors = [[6,182,212],[139,92,246],[16,185,129]];
+            var c = colors[(Math.random() * 3) | 0];
+            highways.push({ pts: pts, cr: c[0], cg: c[1], cb: c[2], particles: [], spawnCD: 0 });
+        }
+    }
+    buildHighways();
+    window.addEventListener('resize', buildHighways);
+
+    // --- Circuit Traces (geometric angular paths around the cube) ---
+    var circuits = [];
+    function buildCircuits() {
+        circuits = [];
+        var numCircuits = 14;
+        for (var i = 0; i < numCircuits; i++) {
+            var segs = [];
+            // Start from a random point on a sphere
+            var th = Math.random() * 6.28;
+            var ph = Math.random() * 3.14;
+            var r = 200 + Math.random() * 150;
+            var cx0 = Math.cos(th) * Math.sin(ph) * r;
+            var cy0 = Math.sin(th) * Math.sin(ph) * r;
+            var cz0 = Math.cos(ph) * r;
+            segs.push([cx0, cy0, cz0]);
+            // Extend with right-angle turns
+            var steps = 3 + ((Math.random() * 4) | 0);
+            for (var s = 0; s < steps; s++) {
+                var last = segs[segs.length - 1];
+                var axis = (Math.random() * 3) | 0;
+                var dir = Math.random() < 0.5 ? 1 : -1;
+                var len = 40 + Math.random() * 100;
+                var next = [last[0], last[1], last[2]];
+                next[axis] += dir * len;
+                segs.push(next);
+            }
+            var cc = [[6,182,212],[139,92,246],[16,185,129],[245,158,11]][(Math.random()*4)|0];
+            circuits.push({ segs: segs, cr: cc[0], cg: cc[1], cb: cc[2], particles: [], spawnCD: 0 });
+        }
+    }
+    buildCircuits();
+
+    // 2D Neural Network vars (rendered in Section 2)
+    var nnLayers = [4, 6, 10, 14, 18, 14, 10, 6, 4];
+    var nnNodes = [];
+    var nnConns = [];
+    var nnFire = [];
+
+    // --- MAIN LOOP ---
+    function loop() {
+        frame++;
+        var t = frame * 0.016; // ~60fps time
+
+        // Auto rotate
+        if (!isDrag) {
+            camRY += 0.002;
+            camRX += 0.0003 * Math.sin(t * 0.1);
+        }
+
+        // Clear with slight trail for glow persistence
+        ctx.fillStyle = 'rgba(2,4,8,0.25)';
+        ctx.fillRect(0, 0, W, H);
+
+        // --- Hex grid background ---
+        var hexSz = 35;
+        var hexH = hexSz * 1.732;
+        ctx.strokeStyle = 'rgba(6,182,212,0.015)';
+        ctx.lineWidth = 0.5;
+        for (var row = -1; row < H / hexH + 1; row++) {
+            for (var col = -1; col < W / (hexSz * 1.5) + 1; col++) {
+                var hx = col * hexSz * 1.5;
+                var hy = row * hexH + (col % 2 ? hexH * 0.5 : 0);
+                ctx.beginPath();
+                for (var s = 0; s < 6; s++) {
+                    var a = 3.1416 / 3 * s + 3.1416 / 6;
+                    var px = hx + hexSz * 0.35 * Math.cos(a);
+                    var py = hy + hexSz * 0.35 * Math.sin(a);
+                    if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+        // --- Draw edges ---
+        for (var i = 0; i < edges.length; i++) {
+            var e = edges[i];
+            var na = nodes[e.a], nb = nodes[e.b];
+            var pa = project(na.x, na.y, na.z);
+            var pb = project(nb.x, nb.y, nb.z);
+            var avgZ = (pa.z + pb.z) * 0.5;
+            var df = Math.max(0, Math.min(1, 1 - (avgZ + 500) / 1000));
+            var alpha = (0.02 + e.glow * 0.13) * df;
+            if (alpha < 0.003) continue;
+
+            var mr = (na.cr + nb.cr) * 0.5;
+            var mg = (na.cg + nb.cg) * 0.5;
+            var mb = (na.cb + nb.cb) * 0.5;
+
+            ctx.beginPath();
+            ctx.moveTo(pa.sx, pa.sy);
+            ctx.lineTo(pb.sx, pb.sy);
+            ctx.strokeStyle = rgba(mr, mg, mb, alpha);
+            ctx.lineWidth = e.glow > 0.3 ? 1.2 : 0.4;
+            ctx.stroke();
+
+            e.glow *= 0.96;
+        }
+
+        // --- Draw packets ---
+        for (var i = packets.length - 1; i >= 0; i--) {
+            var p = packets[i];
+            var e = edges[p.ei];
+            var na = nodes[e.a], nb = nodes[e.b];
+            var px = na.x + (nb.x - na.x) * p.t;
+            var py = na.y + (nb.y - na.y) * p.t;
+            var pz = na.z + (nb.z - na.z) * p.t;
+            var pp = project(px, py, pz);
+            var df = Math.max(0, Math.min(1, 1 - (pp.z + 500) / 1000));
+
+            if (df > 0.05) {
+                var sz = Math.max(0.5, p.sz * pp.s * 0.6);
+                ctx.beginPath();
+                ctx.arc(pp.sx, pp.sy, sz, 0, 6.28);
+                ctx.fillStyle = rgba(p.cr, p.cg, p.cb, 0.9 * df);
+                ctx.shadowColor = rgba(p.cr, p.cg, p.cb, 0.6);
+                ctx.shadowBlur = 10 * df;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Trail
+                ctx.beginPath();
+                ctx.arc(pp.sx, pp.sy, sz * 3, 0, 6.28);
+                ctx.fillStyle = rgba(p.cr, p.cg, p.cb, 0.06 * df);
+                ctx.fill();
+            }
+
+            e.glow = Math.max(e.glow, 0.7);
+            p.t += p.dir * p.speed;
+
+            if (p.t > 1 || p.t < 0) {
+                var destIdx = p.dir > 0 ? e.b : e.a;
+                nodes[destIdx].energy = 1.0;
+
+                // Chain to next edge
+                if (Math.random() < 0.55) {
+                    var candidates = [];
+                    for (var j = 0; j < edges.length; j++) {
+                        if (j !== p.ei && (edges[j].a === destIdx || edges[j].b === destIdx)) {
+                            candidates.push(j);
+                        }
+                    }
+                    if (candidates.length > 0) {
+                        var nextEi = candidates[(Math.random() * candidates.length) | 0];
+                        p.ei = nextEi;
+                        p.dir = edges[nextEi].a === destIdx ? 1 : -1;
+                        p.t = p.dir > 0 ? 0 : 1;
+                        continue;
+                    }
+                }
+                packets.splice(i, 1);
+            }
+        }
+
+        // --- Project and sort nodes ---
+        var projNodes = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var n = nodes[i];
+            var breathe = Math.sin(t * n.spd + n.phase) * 3;
+            var nd = Math.sqrt(n.x*n.x + n.y*n.y + n.z*n.z) || 1;
+            var bx = n.x + (n.x / nd) * breathe;
+            var by = n.y + (n.y / nd) * breathe;
+            var bz = n.z + (n.z / nd) * breathe;
+            var p = project(bx, by, bz);
+            projNodes.push({ i: i, sx: p.sx, sy: p.sy, z: p.z, s: p.s });
+        }
+        projNodes.sort(function(a, b) { return b.z - a.z; });
+
+        // --- Draw nodes ---
+        for (var k = 0; k < projNodes.length; k++) {
+            var pn = projNodes[k];
+            var n = nodes[pn.i];
+            var df = Math.max(0, Math.min(1, 1 - (pn.z + 500) / 1000));
+            if (df < 0.02) continue;
+
+            var en = Math.max(0.15, n.energy);
+            var r = Math.max(0.8, (2 + en * 3.5) * pn.s * 0.5);
+            var alpha = (0.25 + en * 0.7) * df;
+
+            // Glow for energized nodes
+            if (en > 0.4 && df > 0.1) {
+                var glowR = r * 5;
+                var grd = ctx.createRadialGradient(pn.sx, pn.sy, 0, pn.sx, pn.sy, glowR);
+                grd.addColorStop(0, rgba(n.cr, n.cg, n.cb, 0.15 * en * df));
+                grd.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grd;
+                ctx.beginPath();
+                ctx.arc(pn.sx, pn.sy, glowR, 0, 6.28);
+                ctx.fill();
+            }
+
+            // Node circle
+            ctx.beginPath();
+            ctx.arc(pn.sx, pn.sy, r, 0, 6.28);
+            ctx.fillStyle = rgba(n.cr, n.cg, n.cb, alpha);
+            if (en > 0.5) {
+                ctx.shadowColor = rgba(n.cr, n.cg, n.cb, 0.4 * df);
+                ctx.shadowBlur = 8;
+            }
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            n.energy *= 0.97;
+        }
+
+        // --- Dust ---
+        for (var i = 0; i < dust.length; i++) {
+            var d = dust[i];
+            var angle = t * d.orb;
+            var cosD = Math.cos(angle), sinD = Math.sin(angle);
+            var rx = d.x * cosD + d.z * sinD;
+            var rz = -d.x * sinD + d.z * cosD;
+            var dp = project(rx, d.y, rz);
+            var df = Math.max(0, Math.min(1, 1 - (dp.z + 700) / 1400));
+            if (df < 0.02) continue;
+            ctx.beginPath();
+            ctx.arc(dp.sx, dp.sy, Math.max(0.3, d.sz * dp.s * 0.4), 0, 6.28);
+            ctx.fillStyle = rgba(d.cr, d.cg, d.cb, d.a * df);
+            ctx.fill();
+        }
+
+        // --- Core glow ---
+        var cp = project(0, 0, 0);
+        var coreR = 50 * cp.s;
+        var cg2 = ctx.createRadialGradient(cp.sx, cp.sy, 0, cp.sx, cp.sy, coreR);
+        cg2.addColorStop(0, rgba(6, 182, 212, 0.12 + Math.sin(t * 2) * 0.05));
+        cg2.addColorStop(0.3, rgba(139, 92, 246, 0.05));
+        cg2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = cg2;
+        ctx.beginPath();
+        ctx.arc(cp.sx, cp.sy, coreR, 0, 6.28);
+        ctx.fill();
+
+        // Core bright dot
+        ctx.beginPath();
+        ctx.arc(cp.sx, cp.sy, 3 * cp.s, 0, 6.28);
+        ctx.fillStyle = rgba(6, 182, 212, 0.7 + Math.sin(t * 3) * 0.3);
+        ctx.shadowColor = 'rgba(6,182,212,0.8)';
+        ctx.shadowBlur = 20;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Dashed orbit rings around core
+        for (var oi = 0; oi < 3; oi++) {
+            var orbitR = (25 + oi * 15) * cp.s;
+            ctx.beginPath();
+            ctx.arc(cp.sx, cp.sy, orbitR, 0, 6.28);
+            ctx.setLineDash([3, 6]);
+            ctx.strokeStyle = rgba(6, 182, 212, 0.04 + Math.sin(t * 1.5 + oi) * 0.02);
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Orbiting satellites around core
+        for (var si = 0; si < 5; si++) {
+            var sAngle = t * (0.4 + si * 0.25) + si * 1.256;
+            var sOrbit = (20 + si * 12);
+            var sx3 = Math.cos(sAngle) * sOrbit;
+            var sy3 = Math.sin(sAngle) * sOrbit * 0.5;
+            var sz3 = Math.sin(sAngle) * sOrbit * 0.866;
+            var sp = project(sx3, sy3, sz3);
+            var sdf = Math.max(0, Math.min(1, 1 - (sp.z + 300) / 600));
+            if (sdf > 0.05) {
+                var sColors = [[6,182,212],[139,92,246],[16,185,129],[245,158,11],[244,63,94]];
+                var sc = sColors[si];
+                ctx.beginPath();
+                ctx.arc(sp.sx, sp.sy, Math.max(1, 2.5 * sp.s), 0, 6.28);
+                ctx.fillStyle = rgba(sc[0], sc[1], sc[2], 0.8 * sdf);
+                ctx.shadowColor = rgba(sc[0], sc[1], sc[2], 0.6);
+                ctx.shadowBlur = 12 * sdf;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // --- Pulse rings ---
+        ringTimer++;
+        if (ringTimer > 150) { rings.push({ r: 0, max: 250 + Math.random() * 200, a: 0.12, ax: Math.random() * 6.28 }); ringTimer = 0; }
+        for (var ri = rings.length - 1; ri >= 0; ri--) {
+            var rng = rings[ri];
+            rng.r += 1.2;
+            rng.a *= 0.993;
+            var pts = 48;
+            ctx.beginPath();
+            for (var pi = 0; pi <= pts; pi++) {
+                var ang = (pi / pts) * 6.28;
+                var rpx = Math.cos(ang) * rng.r;
+                var rpy = Math.sin(ang) * rng.r;
+                // Tilt ring
+                var cosT = Math.cos(rng.ax), sinT = Math.sin(rng.ax);
+                var ry2 = rpy * cosT;
+                var rz2 = rpy * sinT;
+                var rp = project(rpx, ry2, rz2);
+                if (pi === 0) ctx.moveTo(rp.sx, rp.sy); else ctx.lineTo(rp.sx, rp.sy);
+            }
+            ctx.strokeStyle = rgba(6, 182, 212, rng.a * (1 - rng.r / rng.max));
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            if (rng.r > rng.max) rings.splice(ri, 1);
+        }
+
+        // --- Mouse Trail ---
+        mouseTrail.push({ x: mouseX, y: mouseY, a: 1 });
+        if (mouseTrail.length > 50) mouseTrail.shift();
+        for (var mi = 1; mi < mouseTrail.length; mi++) {
+            var mp = mouseTrail[mi - 1], mc = mouseTrail[mi];
+            mc.a *= 0.94;
+            if (mc.a < 0.01) continue;
+            ctx.beginPath();
+            ctx.moveTo(mp.x, mp.y);
+            ctx.lineTo(mc.x, mc.y);
+            var mfrac = mi / mouseTrail.length;
+            ctx.strokeStyle = rgba(6, 182, 212, mc.a * 0.4 * mfrac);
+            ctx.lineWidth = mfrac * 2.5;
+            ctx.stroke();
+            // Glow dot at tip
+            if (mi === mouseTrail.length - 1) {
+                ctx.beginPath();
+                ctx.arc(mc.x, mc.y, 3, 0, 6.28);
+                ctx.fillStyle = rgba(6, 182, 212, 0.5);
+                ctx.shadowColor = 'rgba(6,182,212,0.6)';
+                ctx.shadowBlur = 15;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // --- Data Highways (2D screen-space roads) ---
+        for (var hi = 0; hi < highways.length; hi++) {
+            var hw = highways[hi];
+            // Draw the road itself
+            ctx.beginPath();
+            for (var pi = 0; pi < hw.pts.length; pi++) {
+                if (pi === 0) ctx.moveTo(hw.pts[pi].x, hw.pts[pi].y);
+                else ctx.lineTo(hw.pts[pi].x, hw.pts[pi].y);
+            }
+            ctx.strokeStyle = rgba(hw.cr, hw.cg, hw.cb, 0.03);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Spawn highway particles
+            hw.spawnCD--;
+            if (hw.spawnCD <= 0) {
+                hw.particles.push({ t: 0, speed: 0.003 + Math.random() * 0.006, sz: 1 + Math.random() * 2 });
+                hw.spawnCD = 15 + ((Math.random() * 30) | 0);
+            }
+
+            // Update and draw highway particles
+            for (var pi2 = hw.particles.length - 1; pi2 >= 0; pi2--) {
+                var hp = hw.particles[pi2];
+                hp.t += hp.speed;
+                if (hp.t >= 1) { hw.particles.splice(pi2, 1); continue; }
+
+                // Interpolate position along the path
+                var totalSegs = hw.pts.length - 1;
+                var segF = hp.t * totalSegs;
+                var segI = Math.min(segF | 0, totalSegs - 1);
+                var segT = segF - segI;
+                var hpx = hw.pts[segI].x + (hw.pts[segI + 1].x - hw.pts[segI].x) * segT;
+                var hpy = hw.pts[segI].y + (hw.pts[segI + 1].y - hw.pts[segI].y) * segT;
+
+                ctx.beginPath();
+                ctx.arc(hpx, hpy, hp.sz, 0, 6.28);
+                ctx.fillStyle = rgba(hw.cr, hw.cg, hw.cb, 0.7);
+                ctx.shadowColor = rgba(hw.cr, hw.cg, hw.cb, 0.5);
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Bright trail behind the particle
+                var trailT = hp.t - hp.speed * 8;
+                if (trailT >= 0) {
+                    var tSegF = trailT * totalSegs;
+                    var tSegI = Math.min(tSegF | 0, totalSegs - 1);
+                    var tSegT = tSegF - tSegI;
+                    var tpx = hw.pts[tSegI].x + (hw.pts[tSegI + 1].x - hw.pts[tSegI].x) * tSegT;
+                    var tpy = hw.pts[tSegI].y + (hw.pts[tSegI + 1].y - hw.pts[tSegI].y) * tSegT;
+                    ctx.beginPath();
+                    ctx.moveTo(tpx, tpy);
+                    ctx.lineTo(hpx, hpy);
+                    ctx.strokeStyle = rgba(hw.cr, hw.cg, hw.cb, 0.15);
+                    ctx.lineWidth = hp.sz * 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // --- 3D Circuit Traces ---
+        for (var ci = 0; ci < circuits.length; ci++) {
+            var cir = circuits[ci];
+            // Draw the trace path
+            var projSegs = [];
+            for (var si2 = 0; si2 < cir.segs.length; si2++) {
+                projSegs.push(project(cir.segs[si2][0], cir.segs[si2][1], cir.segs[si2][2]));
+            }
+
+            ctx.beginPath();
+            for (var si3 = 0; si3 < projSegs.length; si3++) {
+                var ps = projSegs[si3];
+                var cdf = Math.max(0, Math.min(1, 1 - (ps.z + 500) / 1000));
+                if (cdf < 0.03) continue;
+                if (si3 === 0) ctx.moveTo(ps.sx, ps.sy); else ctx.lineTo(ps.sx, ps.sy);
+            }
+            ctx.strokeStyle = rgba(cir.cr, cir.cg, cir.cb, 0.04);
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+
+            // Draw corner nodes on the trace
+            for (var si4 = 0; si4 < projSegs.length; si4++) {
+                var cn = projSegs[si4];
+                var cndf = Math.max(0, Math.min(1, 1 - (cn.z + 500) / 1000));
+                if (cndf < 0.05) continue;
+                ctx.beginPath();
+                ctx.arc(cn.sx, cn.sy, Math.max(0.5, 1.5 * cn.s), 0, 6.28);
+                ctx.fillStyle = rgba(cir.cr, cir.cg, cir.cb, 0.15 * cndf);
+                ctx.fill();
+            }
+
+            // Spawn circuit runners
+            cir.spawnCD--;
+            if (cir.spawnCD <= 0) {
+                cir.particles.push({ t: 0, speed: 0.004 + Math.random() * 0.008 });
+                cir.spawnCD = 45 + ((Math.random() * 80) | 0);
+            }
+
+            // Update and draw circuit runners
+            for (var cpi = cir.particles.length - 1; cpi >= 0; cpi--) {
+                var crp = cir.particles[cpi];
+                crp.t += crp.speed;
+                if (crp.t >= 1) { cir.particles.splice(cpi, 1); continue; }
+
+                var cTotalSegs = cir.segs.length - 1;
+                var cSegF = crp.t * cTotalSegs;
+                var cSegI = Math.min(cSegF | 0, cTotalSegs - 1);
+                var cSegT = cSegF - cSegI;
+                var crx = cir.segs[cSegI][0] + (cir.segs[cSegI+1][0] - cir.segs[cSegI][0]) * cSegT;
+                var cry = cir.segs[cSegI][1] + (cir.segs[cSegI+1][1] - cir.segs[cSegI][1]) * cSegT;
+                var crz = cir.segs[cSegI][2] + (cir.segs[cSegI+1][2] - cir.segs[cSegI][2]) * cSegT;
+                var crpp = project(crx, cry, crz);
+                var crdf = Math.max(0, Math.min(1, 1 - (crpp.z + 500) / 1000));
+                if (crdf < 0.05) continue;
+
+                ctx.beginPath();
+                ctx.arc(crpp.sx, crpp.sy, Math.max(0.8, 2.5 * crpp.s), 0, 6.28);
+                ctx.fillStyle = rgba(cir.cr, cir.cg, cir.cb, 0.85 * crdf);
+                ctx.shadowColor = rgba(cir.cr, cir.cg, cir.cb, 0.6);
+                ctx.shadowBlur = 10 * crdf;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // --- Spawn packets ---
+        spawnTimer++;
+        if (spawnTimer > 18) { spawnPackets(); spawnTimer = 0; }
+
+        // --- HUD ---
+        if (frame % 10 === 0) {
+            var an = 0;
+            for (var i = 0; i < nodes.length; i++) { if (nodes[i].energy > 0.3) an++; }
+            document.getElementById('m-tp').textContent = ((1200 + Math.sin(t*0.3)*400 + Math.random()*100)|0).toLocaleString();
+            document.getElementById('m-an').textContent = an + '/' + nodes.length;
+            document.getElementById('m-sy').textContent = packets.length;
+            document.getElementById('m-lt').textContent = (2.1 + Math.sin(t*0.5)*0.8).toFixed(1) + 'ms';
+            document.getElementById('m-cf').textContent = (94 + Math.sin(t*0.2)*4).toFixed(1) + '%';
+            document.getElementById('m-en').textContent = (0.42 + Math.sin(t*0.15)*0.12).toFixed(3);
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    // Start
+    requestAnimationFrame(loop);
+
+    // Classification cycling
+    setInterval(function() {
+        var el = document.getElementById('clabel');
+        var tx = document.getElementById('ctext');
+        el.classList.remove('show');
+        setTimeout(function() { clsIdx = (clsIdx + 1) % clsList.length; tx.textContent = clsList[clsIdx]; el.classList.add('show'); }, 400);
+        setTimeout(function() { el.classList.remove('show'); }, 3000);
+    }, 4500);
+
+    setTimeout(function() { document.getElementById('clabel').classList.add('show'); }, 800);
+    setInterval(function() { document.getElementById('hud-time').textContent = new Date().toLocaleTimeString(); }, 1000);
+    document.getElementById('hud-time').textContent = new Date().toLocaleTimeString();
+
+    // --- Data streams ---
+    var dsWords = ['SYNAPTIC_LINK','CORTEX_MAP','NEURAL_GATE','WEIGHT_0x3F','BATCH_NORM','ATTN_HEAD','EMB_768',
+        'FFN_RELU','DROPOUT:0.1','LAYER_23','GRAD_CLIP','TOKEN_ID','KV_CACHE','POS_ENC','SOFTMAX','RESIDUAL',
+        'PULSE_OK','SPO2:98%','HR:72BPM','EEG:ALPHA','EMG:NORM','IMU:STBL','RISK:LOW','DIAG:RUN',
+        'WARD_ICU','TRIAGE:3','BP:120/80','TEMP:37C','RESP:16','GCS:15','QSOFA:0','ADMIT_PT'];
+    function updateStreams() {
+        var l = '', r = '';
+        for (var i = 0; i < 35; i++) {
+            l += dsWords[(Math.random() * dsWords.length)|0] + '\n';
+            r += '0x' + ((Math.random()*0xFFFFFF)|0).toString(16).toUpperCase() + '\n';
+        }
+        document.getElementById('ds-l').textContent = l;
+        document.getElementById('ds-r').textContent = r;
+    }
+    setInterval(updateStreams, 120);
+    updateStreams();
+
+    // --- Side info panels ---
+    function updateSidePanels() {
+        var labels = ['CORTEX_LOAD','SYNAPSE_RATE','MEM_BUFFER','IO_CHANNEL','TEMP_CORE','VOLTAGE','FREQ_OSC'];
+        var lHTML = '', rHTML = '';
+        for (var i = 0; i < labels.length; i++) {
+            var v = (20 + Math.random() * 80)|0;
+            lHTML += labels[i] + ' <span class="sp-val">' + v + '%</span><br>';
+        }
+        var rLabels = ['PACKET_LOSS','QUEUE_DEPTH','CACHE_HIT','BRANCH_PRED','PIPELINE','CLOCK_DRIFT','ERR_RATE'];
+        for (var i = 0; i < rLabels.length; i++) {
+            var v2 = (Math.random() * 5).toFixed(2);
+            rHTML += '<span class="sp-val">' + v2 + '</span> ' + rLabels[i] + '<br>';
+        }
+        document.getElementById('sp-left').innerHTML = lHTML;
+        document.getElementById('sp-right').innerHTML = rHTML;
+    }
+    setInterval(updateSidePanels, 800);
+    updateSidePanels();
+
+    // ==============================================
+    // SECTION 2: Neural Architecture Deep Dive
+    // ==============================================
+    var nnCv = document.getElementById('nn-canvas');
+    var nnCtx = nnCv.getContext('2d');
+    var nnW = window.innerWidth, nnH = window.innerHeight;
+    function nnResize() {
+        var sec2 = document.getElementById('sec2');
+        nnW = nnCv.width = sec2.offsetWidth || window.innerWidth;
+        nnH = nnCv.height = Math.max(sec2.offsetHeight, window.innerHeight);
+        buildNeuralNet2D();
+        buildNNLabels();
+    }
+    // Delay initial build to ensure sec2 has layout
+    setTimeout(nnResize, 100);
+    window.addEventListener('resize', nnResize);
+
+    // Rebuild 2D net for section 2 dimensions
+    function buildNeuralNet2D() {
+        nnNodes = [];
+        nnConns = [];
+        nnFire = [];
+        var totalLayers = nnLayers.length;
+        var lSpacing = nnW * 0.72 / (totalLayers - 1);
+        var startX = nnW * 0.14;
+        for (var li = 0; li < totalLayers; li++) {
+            var count = nnLayers[li];
+            var x = startX + li * lSpacing;
+            var layerH = nnH * 0.5;
+            var startY = (nnH - layerH) / 2 + 20;
+            var nSpacing = layerH / (count + 1);
+            for (var ni = 0; ni < count; ni++) {
+                var y = startY + nSpacing * (ni + 1);
+                var ct = li / (totalLayers - 1);
+                nnNodes.push({
+                    x: x, y: y, layer: li,
+                    r: 3 + Math.random() * 2,
+                    cr: 6 + (139 - 6) * ct,
+                    cg: 182 + (92 - 182) * ct,
+                    cb: 212 + (246 - 212) * ct,
+                    energy: 0,
+                    phase: Math.random() * 6.28,
+                    spd: 0.5 + Math.random() * 2
+                });
+            }
+        }
+        for (var i = 0; i < nnNodes.length; i++) {
+            for (var j = 0; j < nnNodes.length; j++) {
+                if (nnNodes[j].layer === nnNodes[i].layer + 1 && Math.random() < 0.35) {
+                    nnConns.push({ a: i, b: j, glow: 0 });
+                }
+            }
+        }
+    }
+
+    // Layer labels
+    var layerNames = ['INPUT','EMBED','ENCODE-1','ENCODE-2','LATENT','DECODE-2','DECODE-1','PROJECT','OUTPUT'];
+    function buildNNLabels() {
+        var container = document.getElementById('nn-labels');
+        container.innerHTML = '';
+        var totalLayers = nnLayers.length;
+        var lSpacing = nnW * 0.72 / (totalLayers - 1);
+        var startX = nnW * 0.14;
+        for (var li = 0; li < totalLayers; li++) {
+            var x = startX + li * lSpacing;
+            var lbl = document.createElement('div');
+            lbl.className = 'nn-layer-label';
+            lbl.style.left = x + 'px';
+            lbl.innerHTML = layerNames[li] + '<br><span style="color:rgba(139,92,246,0.3)">' + nnLayers[li] + ' units</span>';
+            container.appendChild(lbl);
+        }
+    }
+
+    // Fire signal through 2D net
+    function fireNeuralNet2D() {
+        var inputNodes = [];
+        for (var i = 0; i < nnNodes.length; i++) {
+            if (nnNodes[i].layer === 0) inputNodes.push(i);
+        }
+        var startIdx = inputNodes[(Math.random() * inputNodes.length) | 0];
+        if (startIdx === undefined) return;
+        nnNodes[startIdx].energy = 1;
+        for (var ci = 0; ci < nnConns.length; ci++) {
+            if (nnConns[ci].a === startIdx && Math.random() < 0.35) {
+                nnFire.push({ conn: ci, t: 0, speed: 0.01 + Math.random() * 0.018 });
+                nnConns[ci].glow = 1;
+            }
+        }
+    }
+
+    // Section 2 render loop
+    var nnFrame = 0;
+    function nnLoop() {
+        requestAnimationFrame(nnLoop);
+        if (nnNodes.length === 0) return; // wait for build
+        nnFrame++;
+        var t = nnFrame * 0.016;
+
+        nnCtx.fillStyle = 'rgba(2,4,8,0.2)';
+        nnCtx.fillRect(0, 0, nnW, nnH);
+
+        // Connections
+        for (var nci = 0; nci < nnConns.length; nci++) {
+            var nc = nnConns[nci];
+            var na = nnNodes[nc.a], nb = nnNodes[nc.b];
+            var ncA = 0.05 + nc.glow * 0.25;
+            var mx = (na.x + nb.x) / 2;
+            var cp = Math.sin(t * 0.5 + nci * 0.1) * 10;
+
+            nnCtx.beginPath();
+            nnCtx.moveTo(na.x, na.y);
+            nnCtx.bezierCurveTo(mx, na.y + cp, mx, nb.y - cp, nb.x, nb.y);
+            nnCtx.strokeStyle = rgba((na.cr+nb.cr)*0.5, (na.cg+nb.cg)*0.5, (na.cb+nb.cb)*0.5, ncA);
+            nnCtx.lineWidth = nc.glow > 0.3 ? 1.5 : 0.4;
+            nnCtx.stroke();
+            nc.glow *= 0.96;
+        }
+
+        // Nodes
+        for (var nni = 0; nni < nnNodes.length; nni++) {
+            var nn = nnNodes[nni];
+            var drift = Math.sin(t * nn.spd + nn.phase) * 3;
+            var nnx = nn.x, nny = nn.y + drift;
+            var ne = Math.max(0.15, nn.energy);
+            var nr = nn.r * (1 + ne * 0.5);
+
+            if (ne > 0.3) {
+                var g = nnCtx.createRadialGradient(nnx, nny, 0, nnx, nny, nr * 5);
+                g.addColorStop(0, rgba(nn.cr, nn.cg, nn.cb, 0.2 * ne));
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                nnCtx.fillStyle = g;
+                nnCtx.beginPath();
+                nnCtx.arc(nnx, nny, nr * 5, 0, 6.28);
+                nnCtx.fill();
+            }
+
+            nnCtx.beginPath();
+            nnCtx.arc(nnx, nny, nr, 0, 6.28);
+            nnCtx.fillStyle = rgba(nn.cr, nn.cg, nn.cb, 0.4 + ne * 0.6);
+            if (ne > 0.5) { nnCtx.shadowColor = rgba(nn.cr, nn.cg, nn.cb, 0.4); nnCtx.shadowBlur = 8; }
+            nnCtx.fill();
+            nnCtx.shadowBlur = 0;
+
+            nn.energy *= 0.96;
+        }
+
+        // Firing particles
+        for (var fi = nnFire.length - 1; fi >= 0; fi--) {
+            var fp = nnFire[fi];
+            fp.t += fp.speed;
+            var fc = nnConns[fp.conn];
+            if (!fc) { nnFire.splice(fi, 1); continue; }
+            var fa = nnNodes[fc.a], fb = nnNodes[fc.b];
+            if (!fa || !fb) { nnFire.splice(fi, 1); continue; }
+            var fmx = (fa.x + fb.x) / 2;
+            var fcp = Math.sin(t * 0.5 + fp.conn * 0.1) * 10;
+            var ft = fp.t, ft1 = 1 - ft;
+            var fpx = ft1*ft1*ft1*fa.x + 3*ft1*ft1*ft*fmx + 3*ft1*ft*ft*fmx + ft*ft*ft*fb.x;
+            var fpy = ft1*ft1*ft1*fa.y + 3*ft1*ft1*ft*(fa.y+fcp) + 3*ft1*ft*ft*(fb.y-fcp) + ft*ft*ft*fb.y;
+
+            nnCtx.beginPath();
+            nnCtx.arc(fpx, fpy, 3, 0, 6.28);
+            nnCtx.fillStyle = rgba(16, 185, 129, 0.95);
+            nnCtx.shadowColor = 'rgba(16,185,129,0.7)';
+            nnCtx.shadowBlur = 14;
+            nnCtx.fill();
+            nnCtx.shadowBlur = 0;
+
+            // Trail streak
+            var trt = fp.t - fp.speed * 6;
+            if (trt > 0) {
+                var trt1 = 1 - trt;
+                var trx = trt1*trt1*trt1*fa.x + 3*trt1*trt1*trt*fmx + 3*trt1*trt*trt*fmx + trt*trt*trt*fb.x;
+                var trY = trt1*trt1*trt1*fa.y + 3*trt1*trt1*trt*(fa.y+fcp) + 3*trt1*trt*trt*(fb.y-fcp) + trt*trt*trt*fb.y;
+                nnCtx.beginPath();
+                nnCtx.moveTo(trx, trY);
+                nnCtx.lineTo(fpx, fpy);
+                nnCtx.strokeStyle = 'rgba(16,185,129,0.2)';
+                nnCtx.lineWidth = 2;
+                nnCtx.stroke();
+            }
+
+            fc.glow = Math.max(fc.glow, 0.9);
+            if (fp.t >= 1) {
+                fb.energy = 1;
+                for (var fci = 0; fci < nnConns.length; fci++) {
+                    if (nnConns[fci].a === fc.b && Math.random() < 0.28) {
+                        nnFire.push({ conn: fci, t: 0, speed: 0.01 + Math.random() * 0.018 });
+                        nnConns[fci].glow = 1;
+                    }
+                }
+                nnFire.splice(fi, 1);
+            }
+        }
+
+        // Fire periodically
+        if (nnFrame % 30 === 0) fireNeuralNet2D();
+    }
+    requestAnimationFrame(nnLoop);
+
+    // Data panel updates
+    function updateDataPanels() {
+        var dpL = document.getElementById('dp-left');
+        var dpC = document.getElementById('dp-center');
+        var dpR = document.getElementById('dp-right');
+
+        dpL.innerHTML = '<div class="dp-title">MODEL ARCHITECTURE</div>'
+            + 'Type: <span class="dp-val">Dense Feedforward</span><br>'
+            + 'Layers: <span class="dp-val">9</span><br>'
+            + 'Total Params: <span class="dp-val">847,296</span><br>'
+            + 'Activation: <span class="dp-val">GELU</span><br>'
+            + 'Optimizer: <span class="dp-val">AdamW</span><br>'
+            + 'Learning Rate: <span class="dp-val">3e-4</span><br>'
+            + 'Batch Size: <span class="dp-val">128</span><br>'
+            + 'Dropout: <span class="dp-val">0.1</span><br>'
+            + 'Normalization: <span class="dp-val">LayerNorm</span><br>'
+            + 'Precision: <span class="dp-val">FP16</span><br>'
+            + 'Framework: <span class="dp-val">Alpha1 Core</span>';
+
+        var inf = (1.8 + Math.random() * 0.4).toFixed(1);
+        var tok = (340 + Math.random() * 60).toFixed(0);
+        var mem = (2.1 + Math.random() * 0.3).toFixed(2);
+        var acc = (97.2 + Math.random() * 2).toFixed(1);
+        var loss = (0.021 + Math.random() * 0.01).toFixed(4);
+        dpC.innerHTML = '<div class="dp-title">INFERENCE METRICS</div>'
+            + 'Latency: <span class="dp-hi">' + inf + 'ms</span><br>'
+            + 'Tokens/sec: <span class="dp-hi">' + tok + '</span><br>'
+            + 'VRAM: <span class="dp-val">' + mem + ' GB</span><br>'
+            + 'Accuracy: <span class="dp-hi">' + acc + '%</span><br>'
+            + 'Loss: <span class="dp-hi">' + loss + '</span><br>'
+            + 'Active Signals: <span class="dp-val">' + nnFire.length + '</span><br>'
+            + 'Conn. Active: <span class="dp-val">' + nnConns.filter(function(c){return c.glow>0.1}).length + '/' + nnConns.length + '</span><br>'
+            + 'Status: <span class="dp-hi">NOMINAL</span>';
+
+        var layers = ['L0 INPUT','L1 EMBED','L2 ENC-1','L3 ENC-2','L4 LATENT','L5 DEC-2','L6 DEC-1','L7 PROJ','L8 OUT'];
+        var html = '<div class="dp-title">WEIGHT DISTRIBUTION</div>';
+        for (var i = 0; i < layers.length; i++) {
+            var w = (Math.random() * 2 - 1).toFixed(3);
+            var cls = parseFloat(w) >= 0 ? 'dp-hi' : 'dp-lo';
+            var std = (0.01 + Math.random() * 0.05).toFixed(4);
+            html += layers[i] + ' μ:<span class="' + cls + '">' + w + '</span> σ:<span class="dp-val">' + std + '</span><br>';
+        }
+        dpR.innerHTML = html;
+    }
+    setInterval(updateDataPanels, 1200);
+    updateDataPanels();
+
+})();
+</script>
+</body>
+
+<!-- Mirrored from alpha1-10be6.web.app/alpha1-viz.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 09 Aug 2026 05:09:16 GMT -->
+</html>
