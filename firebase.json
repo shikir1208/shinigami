@@ -6,7 +6,13 @@
       "**/.*",
       "**/node_modules/**",
       "AlphaNULL/**",
-      "clean.py"
+      "clean.py",
+      "**/*.apk",
+      "**/*.exe",
+      "**/*.aab",
+      "**/*.keystore",
+      "eris-android/**",
+      "eris-native/**"
     ]
   }
 }
