@@ -9,15 +9,13 @@
 
 (function () {
     let keyBuffer = '';
-    let rPressCount = 0;
-    let rPressTimer = null;
     let clickCount = 0;
     let clickTimer = null;
     let particleInterval = null;
     let overlayEl = null;
 
     // Secret keyword triggers
-    const SECRET_KEYWORDS = ['rlove', 'rehabr', 'romantic', 'rhea', 'rose', 'rare', 'rheart'];
+    const SECRET_KEYWORDS = ['rawan'];
 
     function initEasterEgg() {
         createOverlayDOM();
@@ -143,18 +141,6 @@
             }
 
             const char = e.key.toLowerCase();
-
-            // Check single key 'r' rapid sequence
-            if (char === 'r') {
-                rPressCount++;
-                clearTimeout(rPressTimer);
-                if (rPressCount >= 4) {
-                    triggerEasterEgg();
-                    rPressCount = 0;
-                } else {
-                    rPressTimer = setTimeout(() => { rPressCount = 0; }, 1500);
-                }
-            }
 
             // Check word buffer
             keyBuffer += char;
