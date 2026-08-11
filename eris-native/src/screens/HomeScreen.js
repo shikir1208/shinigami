@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation, patient }) {
       <View style={styles.telemetryGrid}>
         <TouchableOpacity style={styles.telemetryCard} onPress={() => navigation.navigate('Vitals')}>
           <View style={styles.telemetryHeader}>
-            <Ionicons name="heart" size={18} color="#EF4444" />
+            <Ionicons name="heart" size={16} color="#EF4444" />
             <Text style={styles.telemetryLabel}>Heart Rate</Text>
           </View>
           <Text style={styles.telemetryValue}>
@@ -87,11 +87,21 @@ export default function HomeScreen({ navigation, patient }) {
 
         <TouchableOpacity style={styles.telemetryCard} onPress={() => navigation.navigate('Vitals')}>
           <View style={styles.telemetryHeader}>
-            <Ionicons name="water" size={18} color="#06B6D4" />
-            <Text style={styles.telemetryLabel}>SpO2 Level</Text>
+            <Ionicons name="water" size={16} color="#06B6D4" />
+            <Text style={styles.telemetryLabel}>SpO2</Text>
           </View>
           <Text style={styles.telemetryValue}>
             {currentPatient.vitals?.spo2 || 98} <Text style={styles.telemetryUnit}>%</Text>
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.telemetryCard} onPress={() => navigation.navigate('Vitals')}>
+          <View style={styles.telemetryHeader}>
+            <Ionicons name="fitness" size={16} color="#8B5CF6" />
+            <Text style={styles.telemetryLabel}>EMG Tone</Text>
+          </View>
+          <Text style={styles.telemetryValue}>
+            {currentPatient.vitals?.emg || 3.4} <Text style={styles.telemetryUnit}>μV</Text>
           </Text>
         </TouchableOpacity>
       </View>

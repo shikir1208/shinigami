@@ -8,17 +8,16 @@ export default function VitalsScreen({ patient }) {
     hr: 78,
     spo2: 98,
     gsr: 1.4,
+    emg: 3.4,
     imuStatus: 'Stable',
-    temp: 36.8,
-    sys: 120,
-    dia: 80
+    temp: 36.8
   };
 
   const vitalCards = [
-    { title: 'Heart Rate (ECG)', value: `${vitals.hr || 78}`, unit: 'BPM', icon: 'heart', color: '#EF4444', status: (vitals.hr > 100 ? 'Elevated' : 'Normal') },
+    { title: 'Heart Rate (PPG)', value: `${vitals.hr || 78}`, unit: 'BPM', icon: 'heart', color: '#EF4444', status: (vitals.hr > 100 ? 'Elevated' : 'Normal') },
     { title: 'Blood Oxygen (SpO2)', value: `${vitals.spo2 || 98}`, unit: '%', icon: 'water', color: '#06B6D4', status: (vitals.spo2 < 95 ? 'Low' : 'Optimal') },
-    { title: 'Blood Pressure', value: `${vitals.sys || 120}/${vitals.dia || 80}`, unit: 'mmHg', icon: 'pulse', color: '#8B5CF6', status: 'Normal' },
-    { title: 'GSR Stress Level', value: `${vitals.gsr || 1.4}`, unit: 'μS', icon: 'flash', color: '#F59E0B', status: 'Low Stress' },
+    { title: 'EMG Muscle Tone', value: `${vitals.emg || 3.4}`, unit: 'μV', icon: 'fitness', color: '#8B5CF6', status: 'Flexor Active' },
+    { title: 'GSR Stress Level', value: `${vitals.gsr || 1.4}`, unit: 'μS', icon: 'flash', color: '#F59E0B', status: 'Calm State' },
     { title: 'IMU Motion State', value: `${vitals.imuStatus || 'Stable'}`, unit: '', icon: 'body', color: '#10B981', status: 'Tracking' },
     { title: 'Body Temp', value: `${vitals.temp || 36.8}`, unit: '°C', icon: 'thermometer', color: '#EC4899', status: 'Normal' },
   ];

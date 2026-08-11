@@ -45,7 +45,7 @@ export const DEFAULT_PATIENTS = [
     level: 14,
     rankTier: 'GOLD TIER III',
     streakDays: 12,
-    vitals: { hr: 78, spo2: 98, gsr: 1.4, imuStatus: 'Stable', temp: 36.8, sys: 120, dia: 80 },
+    vitals: { hr: 78, spo2: 98, gsr: 1.4, emg: 3.4, imuStatus: 'Stable', temp: 36.8 },
     quests: [
       { id: 'q1', title: 'Wrist Extension 3x10', xp: 250, completed: true },
       { id: 'q2', title: 'SpO2 Deep Breathing (5m)', xp: 150, completed: false },
@@ -72,7 +72,7 @@ export const DEFAULT_PATIENTS = [
     level: 12,
     rankTier: 'GOLD TIER II',
     streakDays: 8,
-    vitals: { hr: 98, spo2: 96, gsr: 2.1, imuStatus: 'Elevated Tremor', temp: 37.2, sys: 135, dia: 88 },
+    vitals: { hr: 98, spo2: 96, gsr: 2.1, emg: 8.2, imuStatus: 'Elevated Tremor', temp: 37.2 },
     quests: [
       { id: 'q1', title: 'Cardio Rhythm Breathing (10m)', xp: 300, completed: true },
       { id: 'q2', title: 'Upper Extremity Flexion', xp: 200, completed: false }
@@ -96,7 +96,7 @@ export const DEFAULT_PATIENTS = [
     level: 16,
     rankTier: 'CYBER PLATINUM',
     streakDays: 19,
-    vitals: { hr: 72, spo2: 99, gsr: 1.1, imuStatus: 'Normal', temp: 36.6, sys: 118, dia: 76 },
+    vitals: { hr: 72, spo2: 99, gsr: 1.1, emg: 1.8, imuStatus: 'Normal', temp: 36.6 },
     quests: [
       { id: 'q1', title: 'Morning Aerobic Walk', xp: 400, completed: true },
       { id: 'q2', title: 'Vitals Self-Check', xp: 100, completed: true }
@@ -118,7 +118,7 @@ export const DEFAULT_PATIENTS = [
     level: 25,
     rankTier: 'LEGENDARY TIER I',
     streakDays: 30,
-    vitals: { hr: 68, spo2: 100, gsr: 0.9, imuStatus: 'Optimal', temp: 36.5, sys: 115, dia: 75 },
+    vitals: { hr: 68, spo2: 100, gsr: 0.9, emg: 0.5, imuStatus: 'Optimal', temp: 36.5 },
     quests: [
       { id: 'q1', title: 'Neural Core Mastery', xp: 500, completed: true },
       { id: 'q2', title: 'Full Motor Recovery Flex', xp: 500, completed: true }
