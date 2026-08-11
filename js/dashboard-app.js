@@ -1233,50 +1233,52 @@ function renderPatients(patients) {
 
 // Set up real-time listener for a patient's sensor data from Firebase
 function setupLiveSensorListener(patientId) {
-    // Skip if already listening
     if (dashboardListeners[patientId]) return;
 
-    // Listen to the latest reading in sensorData/{patientId}/readings
+    const setLiveData = (data) => {
+        if (!data) return;
+        const hr = data.hr || data.heartRate || data.ppgValue || 0;
+        const spo2 = data.spo2 || data.oximetry || 0;
+        const gsr = data.gsr || data.stress || 0;
+        const emg = data.emg || data.muscle || 0;
+        const imu = data.imu || data.motion || 0;
+
+        dashboardLiveData[patientId] = {
+            ppg: { value: hr, wave: data.ppgWave || Math.sin(Date.now() / 200) * (hr ? 1 : 0) },
+            spo2: { value: spo2, wave: spo2 },
+            gsr: { value: gsr, wave: gsr },
+            emg: { value: Math.round(emg), wave: emg },
+            imu: { value: imu, wave: imu }
+        };
+    };
+
+    // 1. Listen to sensorData/{patientId}/readings
     const unsubscribe = db.collection('sensorData').doc(patientId)
         .collection('readings')
         .orderBy('timestamp', 'desc')
         .limit(1)
         .onSnapshot(snapshot => {
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                // Convert ESP32 flat format into the readings structure DoctorHelper expects
-                dashboardLiveData[patientId] = {
-                    ppg: { value: data.hr || 0, wave: data.ppg || 0 },
-                    spo2: { value: data.spo2 || 0, wave: data.spo2 || 0 },
-                    gsr: { value: data.gsr || 0, wave: data.gsr || 0 },
-                    emg: { value: data.emg || 0, wave: data.emg || 0 },
-                    imu: { value: data.imu || 0, wave: data.imu || 0 }
-                };
-            });
+            snapshot.forEach(doc => setLiveData(doc.data()));
         }, err => {
-            console.warn(`Sensor listener error for ${patientId}:`, err);
+            console.warn(`Sensor listener notice for ${patientId}:`, err);
         });
 
     dashboardListeners[patientId] = unsubscribe;
 
-    // Also listen to lastReading on the patient doc as a fallback/supplement
+    // 2. Listen to patients/{patientId} for lastReading / vitals
     db.collection('patients').doc(patientId).onSnapshot(doc => {
         if (!doc.exists) return;
         const data = doc.data();
         if (data.lastReading) {
-            const lr = data.lastReading;
-            // Only update if we don't already have live sensorData stream data,
-            // or merge as a fallback
-            if (!dashboardLiveData[patientId] || !dashboardLiveData[patientId].ppg || dashboardLiveData[patientId].ppg.value === 0) {
-                dashboardLiveData[patientId] = {
-                    ppg: { value: lr.hr || 0, wave: lr.ppg || 0 },
-                    spo2: { value: lr.spo2 || 0, wave: lr.spo2 || 0 },
-                    gsr: { value: lr.gsr || 0, wave: lr.gsr || 0 },
-                    emg: { value: lr.emg || 0, wave: lr.emg || 0 },
-                    imu: { value: lr.imu || 0, wave: lr.imu || 0 }
-                };
-            }
+            setLiveData(data.lastReading);
+        } else if (data.vitals) {
+            setLiveData(data.vitals);
         }
+    });
+
+    // 3. Listen to telemetry/{patientId}
+    db.collection('telemetry').doc(patientId).onSnapshot(doc => {
+        if (doc.exists) setLiveData(doc.data());
     });
 }
 

@@ -393,16 +393,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const recVal = document.getElementById('eris-recovery-val');
         if (recVal) recVal.textContent = `${patient.recoveryPercent || 68}%`;
 
-        // Vitals from Firestore
+        // Vitals from Firestore (vitals or lastReading from ESP32)
         const hrEl = document.getElementById('eris-val-hr');
         const spo2El = document.getElementById('eris-val-spo2');
         const emgEl = document.getElementById('eris-val-emg');
         const gsrEl = document.getElementById('eris-val-gsr');
-        if (patient.vitals) {
-            if (hrEl) hrEl.innerHTML = `${patient.vitals.hr || 78} <span class="vital-unit">BPM</span>`;
-            if (spo2El) spo2El.innerHTML = `${patient.vitals.spo2 || 98} <span class="vital-unit">%</span>`;
-            if (emgEl) emgEl.innerHTML = `${patient.vitals.emg || 3.4} <span class="vital-unit">µV</span>`;
-            if (gsrEl) gsrEl.innerHTML = `${patient.vitals.gsr || 2.8} <span class="vital-unit">µS</span>`;
+        
+        const vit = patient.lastReading || patient.vitals;
+        if (vit) {
+            if (hrEl) hrEl.innerHTML = `${vit.hr || vit.ppgValue || 0} <span class="vital-unit">BPM</span>`;
+            if (spo2El) spo2El.innerHTML = `${vit.spo2 || 0} <span class="vital-unit">%</span>`;
+            if (emgEl) emgEl.innerHTML = `${vit.emg || 0} <span class="vital-unit">µV</span>`;
+            if (gsrEl) gsrEl.innerHTML = `${vit.gsr || 0} <span class="vital-unit">µS</span>`;
         }
 
         // Update quests from Firestore

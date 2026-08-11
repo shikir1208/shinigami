@@ -238,18 +238,64 @@ export const patientService = {
     throw new Error(`Patient Code "${rawCode}" not found. Try PT-0331, PT-0041, or RAWAN-2026.`);
   },
 
-  // Subscribe to real-time updates for a logged-in patient
+  // Subscribe to real-time updates for a logged-in patient (including ESP32 telemetry)
   subscribeToPatient(patientId, callback) {
     if (!patientId) return () => {};
 
+    let currentData = null;
+
+    const notify = () => {
+      if (currentData) callback(currentData);
+    };
+
+    // 1. Primary patient doc snapshot
     const docRef = doc(db, 'patients', patientId);
-    return onSnapshot(docRef, (docSnap) => {
+    const unsubDoc = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
-        callback({ id: docSnap.id, ...docSnap.data() });
+        const data = docSnap.data();
+        currentData = { id: docSnap.id, ...data };
+        if (data.lastReading) {
+          currentData.vitals = {
+            hr: data.lastReading.hr || currentData.vitals?.hr || 0,
+            spo2: data.lastReading.spo2 || currentData.vitals?.spo2 || 0,
+            gsr: data.lastReading.gsr || currentData.vitals?.gsr || 0,
+            emg: data.lastReading.emg || currentData.vitals?.emg || 0,
+            imuStatus: data.lastReading.imu ? `${data.lastReading.imu}g` : (currentData.vitals?.imuStatus || 'Stable')
+          };
+        }
+        notify();
       }
     }, (error) => {
-      console.error('Firestore real-time subscription error:', error);
+      console.warn('Firestore patient subscription notice:', error);
     });
+
+    // 2. Real-time telemetry subcollection snapshot (ESP32 stream)
+    let unsubSensor = () => {};
+    try {
+      const sensorCol = collection(db, 'sensorData', patientId, 'readings');
+      unsubSensor = onSnapshot(sensorCol, (snapshot) => {
+        snapshot.forEach(d => {
+          const reading = d.data();
+          if (currentData) {
+            currentData.vitals = {
+              hr: reading.hr || currentData.vitals?.hr || 0,
+              spo2: reading.spo2 || currentData.vitals?.spo2 || 0,
+              gsr: reading.gsr || currentData.vitals?.gsr || 0,
+              emg: reading.emg || currentData.vitals?.emg || 0,
+              imuStatus: reading.imu ? `${reading.imu}g` : 'Active Stream'
+            };
+            notify();
+          }
+        });
+      }, err => console.warn('Sensor subcollection notice:', err));
+    } catch (e) {
+      console.warn('Sensor stream setup error:', e);
+    }
+
+    return () => {
+      unsubDoc();
+      unsubSensor();
+    };
   },
 
   // Toggle quest completion and update XP/Level

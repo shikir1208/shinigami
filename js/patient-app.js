@@ -194,59 +194,66 @@ function initPatientView() {
 
 // ===== ESP32 Live Data Listener =====
 function startLiveDataListener(patientId) {
-    // Listen to the patient document for lastReading updates from ESP32
+    const handleIncomingTelemetry = (data) => {
+        if (!data) return;
+        lastESP32DataTime = data.timestamp || Date.now();
+
+        const hr = data.hr || data.heartRate || data.ppgValue || 0;
+        const spo2 = data.spo2 || data.oximetry || 0;
+        const gsr = data.gsr || data.stress || 0;
+        const emg = data.emg || data.muscle || 0;
+        const imu = data.imu || data.motion || 0;
+
+        liveReadings = {
+            ppg: { value: hr, wave: data.ppgWave || Math.sin(Date.now() / 200) * (hr ? 1 : 0) },
+            spo2: { value: spo2, wave: spo2 },
+            gsr: { value: gsr, wave: gsr },
+            emg: { value: Math.round(emg), wave: emg * (Math.random() - 0.5) * 2 },
+            imu: { value: imu, wave: imu * (Math.random() - 0.5) * 10 }
+        };
+    };
+
+    // 1. Listen to patient document for lastReading / vitals
     db.collection('patients').doc(patientId).onSnapshot(doc => {
         if (!doc.exists) return;
         const data = doc.data();
-        
         if (data.lastReading) {
-            const lr = data.lastReading;
-            const timestamp = lr.timestamp || 0;
-            
-            // Check if this is fresh data
-            const now = Date.now();
-            const age = now - timestamp;
-            
-            if (age < CONNECTION_TIMEOUT_MS) {
-                lastESP32DataTime = timestamp;
-                
-                // Convert lastReading to the readings format used by the app
-                liveReadings = {
-                    ppg: { value: lr.hr || 0, wave: Math.sin(Date.now() / 200) * (lr.ppg || 0.5) },
-                    spo2: { value: lr.spo2 || 0, wave: lr.spo2 || 97 },
-                    gsr: { value: lr.gsr || 0, wave: lr.gsr || 5 },
-                    emg: { value: Math.round(lr.emg || 0), wave: (lr.emg || 0) * (Math.random() - 0.5) * 2 },
-                    imu: { value: lr.imu || 0, wave: (lr.imu || 0) * (Math.random() - 0.5) * 50 }
-                };
-            }
+            handleIncomingTelemetry(data.lastReading);
+        } else if (data.vitals) {
+            handleIncomingTelemetry({
+                hr: data.vitals.hr,
+                spo2: data.vitals.spo2,
+                gsr: data.vitals.gsr,
+                emg: data.vitals.emg,
+                imu: data.vitals.imu || 0,
+                timestamp: data.vitals.timestamp || Date.now()
+            });
         }
     }, err => {
-        console.error('Live data listener error:', err);
+        console.warn('Patient doc live listener notice:', err);
     });
 
-    // Also listen to the sensorData subcollection for real-time readings
+    // 2. Listen to sensorData subcollection for real-time readings stream
     sensorUnsubscribe = db.collection('sensorData').doc(patientId)
         .collection('readings')
         .orderBy('timestamp', 'desc')
         .limit(1)
         .onSnapshot(snapshot => {
             snapshot.forEach(doc => {
-                const data = doc.data();
-                {
-                    lastESP32DataTime = Date.now();
-                    
-                    liveReadings = {
-                        ppg: { value: data.hr || 0, wave: Math.sin(Date.now() / 200) },
-                        spo2: { value: data.spo2 || 0, wave: data.spo2 || 97 },
-                        gsr: { value: data.gsr || 0, wave: data.gsr || 5 },
-                        emg: { value: Math.round(data.emg || 0), wave: (data.emg || 0) * (Math.random() - 0.5) * 2 },
-                        imu: { value: data.imu || 0, wave: (data.imu || 0) * (Math.random() - 0.5) * 50 }
-                    };
-                }
+                handleIncomingTelemetry(doc.data());
             });
         }, err => {
-            console.error('Sensor data listener error:', err);
+            console.warn('sensorData subcollection listener notice:', err);
         });
+
+    // 3. Listen to top-level telemetry collection
+    db.collection('telemetry').doc(patientId).onSnapshot(doc => {
+        if (doc.exists) {
+            handleIncomingTelemetry(doc.data());
+        }
+    }, err => {
+        console.warn('Telemetry collection listener notice:', err);
+    });
 }
 
 // ===== Connection Status UI =====
