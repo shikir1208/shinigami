@@ -780,3 +780,147 @@ body.eris-app-body {
     color: #fff;
     margin-bottom: 1.5rem;
 }
+
+/* Patient Access Code Button & Modal Styles */
+.eris-code-btn {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-cyan);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.74rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.eris-code-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 12px var(--accent-blue-glow);
+}
+
+.eris-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 4, 8, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.eris-modal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-2xl);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.eris-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eris-modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.eris-modal-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.eris-modal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.eris-modal-input-group input {
+    background: var(--bg-glass-input);
+    border: 1px solid var(--border-subtle);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    outline: none;
+}
+
+.eris-modal-input-group input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px var(--accent-teal-glow);
+}
+
+.eris-btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    color: #fff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.eris-btn-primary:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 0 20px var(--accent-blue-glow);
+}
+
+.eris-quick-codes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 0.75rem;
+}
+
+.eris-quick-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.eris-code-chip {
+    background: var(--bg-glass-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--accent-cyan);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.eris-code-chip:hover {
+    background: rgba(0, 245, 255, 0.15);
+    border-color: var(--accent-cyan);
+}

@@ -1,65 +1,55 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme';
 
-export default function VitalsScreen() {
-  const vitals = [
-    { id: 'hr', name: 'Heart Rate', value: '72', unit: 'BPM', status: 'Normal', icon: 'heart', color: '#EF4444', trend: 'Stable' },
-    { id: 'spo2', name: 'Oxygen Saturation', value: '98', unit: '%', status: 'Optimal', icon: 'pulse', color: theme.colors.accent, trend: '+0.5%' },
-    { id: 'emg', name: 'EMG Muscle Tone', value: '84', unit: 'µV', status: 'Active', icon: 'fitness', color: theme.colors.primary, trend: 'High' },
-    { id: 'gsr', name: 'GSR Stress Level', value: '1.2', unit: 'kΩ', status: 'Low Stress', icon: 'leaf', color: '#F59E0B', trend: '-0.3' },
-    { id: 'imu', name: 'IMU Motion Accel', value: '1.05', unit: 'g', status: 'Normal', icon: 'navigate', color: '#3B82F6', trend: 'Steady' },
+export default function VitalsScreen({ patient }) {
+  const vitals = patient?.vitals || {
+    hr: 78,
+    spo2: 98,
+    gsr: 1.4,
+    imuStatus: 'Stable',
+    temp: 36.8,
+    sys: 120,
+    dia: 80
+  };
+
+  const vitalCards = [
+    { title: 'Heart Rate (ECG)', value: `${vitals.hr || 78}`, unit: 'BPM', icon: 'heart', color: '#EF4444', status: (vitals.hr > 100 ? 'Elevated' : 'Normal') },
+    { title: 'Blood Oxygen (SpO2)', value: `${vitals.spo2 || 98}`, unit: '%', icon: 'water', color: '#06B6D4', status: (vitals.spo2 < 95 ? 'Low' : 'Optimal') },
+    { title: 'Blood Pressure', value: `${vitals.sys || 120}/${vitals.dia || 80}`, unit: 'mmHg', icon: 'pulse', color: '#8B5CF6', status: 'Normal' },
+    { title: 'GSR Stress Level', value: `${vitals.gsr || 1.4}`, unit: 'μS', icon: 'flash', color: '#F59E0B', status: 'Low Stress' },
+    { title: 'IMU Motion State', value: `${vitals.imuStatus || 'Stable'}`, unit: '', icon: 'body', color: '#10B981', status: 'Tracking' },
+    { title: 'Body Temp', value: `${vitals.temp || 36.8}`, unit: '°C', icon: 'thermometer', color: '#EC4899', status: 'Normal' },
   ];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Overall Health Status Banner */}
-      <View style={styles.statusBanner}>
-        <View style={styles.statusDot} />
-        <View style={styles.statusTextContainer}>
-          <Text style={styles.statusTitle}>All Vitals Nominal</Text>
-          <Text style={styles.statusSubtitle}>Real-time telemetry stream active</Text>
+      <View style={styles.headerBox}>
+        <View style={styles.liveIndicator}>
+          <View style={styles.pulseDot} />
+          <Text style={styles.liveText}>REAL-TIME FIRESTORE STREAM ACTIVE</Text>
         </View>
-        <Ionicons name="wifi-outline" size={20} color={theme.colors.accent} />
+        <Text style={styles.headerSub}>Live Telemetry for {patient?.name || 'Patient'}</Text>
       </View>
 
-      <Text style={styles.sectionTitle}>Sensor Telemetry Grid</Text>
-
-      {/* Sensor Grid */}
-      {vitals.map(item => (
-        <View key={item.id} style={styles.vitalCard}>
-          <View style={styles.cardLeft}>
-            <View style={[styles.iconBg, { backgroundColor: `${item.color}15` }]}>
-              <Ionicons name={item.icon} size={22} color={item.color} />
+      <View style={styles.grid}>
+        {vitalCards.map((v, idx) => (
+          <View key={idx} style={styles.vitalCard}>
+            <View style={styles.vitalHeader}>
+              <Ionicons name={v.icon} size={18} color={v.color} />
+              <Text style={styles.vitalTitle} numberOfLines={1}>{v.title}</Text>
             </View>
-            <View>
-              <Text style={styles.vitalName}>{item.name}</Text>
-              <Text style={styles.vitalTrend}>Trend: {item.trend}</Text>
+
+            <Text style={styles.vitalVal}>
+              {v.value} {v.unit ? <Text style={styles.vitalUnit}>{v.unit}</Text> : null}
+            </Text>
+
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>{v.status}</Text>
             </View>
           </View>
-
-          <View style={styles.cardRight}>
-            <View style={styles.valueRow}>
-              <Text style={styles.vitalValue}>{item.value}</Text>
-              <Text style={styles.vitalUnit}>{item.unit}</Text>
-            </View>
-            <View style={[styles.statusBadge, { backgroundColor: `${item.color}20` }]}>
-              <Text style={[styles.statusBadgeText, { color: item.color }]}>{item.status}</Text>
-            </View>
-          </View>
-        </View>
-      ))}
-
-      {/* Clinical Notes Card */}
-      <View style={styles.notesCard}>
-        <View style={styles.notesHeader}>
-          <Ionicons name="document-text-outline" size={18} color={theme.colors.textMuted} />
-          <Text style={styles.notesTitle}>CLINICAL TELEMETRY NOTE</Text>
-        </View>
-        <Text style={styles.notesText}>
-          SpO2 level and heart rate stability show excellent autonomic nervous system regulation during morning wrist exercises.
-        </Text>
+        ))}
       </View>
     </ScrollView>
   );
@@ -71,129 +61,87 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bg,
   },
   content: {
-    padding: theme.spacing.md,
-    paddingTop: theme.spacing.lg,
+    padding: 16,
+    gap: 16,
   },
-  statusBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.accentLight,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    borderWidth: 1,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-  },
-  statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.colors.accent,
-    marginRight: theme.spacing.sm,
-  },
-  statusTextContainer: {
-    flex: 1,
-  },
-  statusTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: theme.colors.accent,
-  },
-  statusSubtitle: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
-    marginTop: 2,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: theme.colors.textMain,
-    marginBottom: theme.spacing.sm,
-  },
-  vitalCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  headerBox: {
     backgroundColor: theme.colors.cardBg,
-    borderRadius: theme.borderRadius.md,
-    borderColor: theme.colors.cardBorder,
+    borderRadius: 14,
     borderWidth: 1,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
-  },
-  cardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconBg: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: theme.spacing.sm,
-  },
-  vitalName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: theme.colors.textMain,
-  },
-  vitalTrend: {
-    fontSize: 12,
-    color: theme.colors.textDim,
-    marginTop: 2,
-  },
-  cardRight: {
-    alignItems: 'flex-end',
-  },
-  valueRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 4,
-  },
-  vitalValue: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: theme.colors.textMain,
-  },
-  vitalUnit: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: theme.colors.textMuted,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    marginTop: 4,
-  },
-  statusBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  notesCard: {
-    backgroundColor: theme.colors.cardBg,
-    borderRadius: theme.borderRadius.md,
     borderColor: theme.colors.cardBorder,
-    borderWidth: 1,
-    padding: theme.spacing.md,
-    marginTop: theme.spacing.md,
+    padding: 14,
   },
-  notesHeader: {
+  liveIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 6,
   },
-  notesTitle: {
-    fontSize: 11,
+  pulseDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: theme.colors.accent,
+  },
+  liveText: {
+    color: theme.colors.accent,
+    fontSize: 10,
     fontWeight: '700',
-    color: theme.colors.textMuted,
     letterSpacing: 1,
   },
-  notesText: {
-    fontSize: 13,
-    color: theme.colors.textMuted,
-    lineHeight: 19,
+  headerSub: {
+    color: theme.colors.textMain,
+    fontSize: 14,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  vitalCard: {
+    width: '48%',
+    backgroundColor: theme.colors.cardBg,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    padding: 14,
+  },
+  vitalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  vitalTitle: {
+    color: theme.colors.textDim,
+    fontSize: 11,
+    fontWeight: '600',
+    flex: 1,
+  },
+  vitalVal: {
+    color: theme.colors.textMain,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  vitalUnit: {
+    fontSize: 12,
+    color: theme.colors.textDim,
+    fontWeight: '400',
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.bg,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+  },
+  statusText: {
+    color: theme.colors.textDim,
+    fontSize: 10,
+    fontWeight: '600',
   },
 });

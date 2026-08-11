@@ -247,14 +247,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Subscribe to Live Firebase Vitals if available
-    if (window.PatientsDB) {
-        const patient = window.PatientsDB.getById('PT-0331') || window.PatientsDB.getAll()[0];
-        if (patient && patient.lastReading) {
-            const hrEl = document.getElementById('eris-val-hr');
-            const spo2El = document.getElementById('eris-val-spo2');
-            if (hrEl) hrEl.innerHTML = `${patient.lastReading.hr || 72} <span class="vital-unit">BPM</span>`;
-            if (spo2El) spo2El.innerHTML = `${patient.lastReading.spo2 || 98} <span class="vital-unit">%</span>`;
+    // --- Patient Code Login & Session Sync ---
+    let activePatientCode = localStorage.getItem('eris_active_patient_code') || 'PT-0331';
+    let currentPatientData = null;
+
+    const btnCode = document.getElementById('eris-btn-code');
+    const codeBadge = document.getElementById('eris-current-code-badge');
+    const modalCode = document.getElementById('eris-code-modal');
+    const modalClose = document.getElementById('eris-modal-close');
+    const inputCode = document.getElementById('eris-input-patient-code');
+    const btnSubmitCode = document.getElementById('eris-btn-submit-code');
+    const codeChips = document.querySelectorAll('.eris-code-chip');
+
+    const updatePatientHeaderUI = (patient) => {
+        if (!patient) return;
+        currentPatientData = patient;
+        if (codeBadge) codeBadge.textContent = patient.code || patient.id || activePatientCode;
+        
+        const avatarEl = document.getElementById('eris-avatar');
+        const greetingEl = document.querySelector('.eris-greeting');
+        const subgreetingEl = document.querySelector('.eris-subgreeting');
+
+        const initials = (patient.name || 'PT').split(' ').map(n => n[0]).join('').substring(0, 2);
+        if (avatarEl) avatarEl.textContent = initials;
+        if (greetingEl) greetingEl.textContent = `Hello, ${(patient.name || 'Patient').split(' ')[0]}`;
+        if (subgreetingEl) subgreetingEl.textContent = `Rehab Phase II • ${patient.ward || 'Ward'}`;
+
+        // Recovery Ring
+        const recVal = document.getElementById('eris-recovery-val');
+        if (recVal) recVal.textContent = `${patient.recoveryPercent || 68}%`;
+
+        // Vitals
+        const hrEl = document.getElementById('eris-val-hr');
+        const spo2El = document.getElementById('eris-val-spo2');
+        if (patient.vitals) {
+            if (hrEl) hrEl.innerHTML = `${patient.vitals.hr || 78} <span class="vital-unit">BPM</span>`;
+            if (spo2El) spo2El.innerHTML = `${patient.vitals.spo2 || 98} <span class="vital-unit">%</span>`;
         }
+    };
+
+    const switchPatientCode = (newCode) => {
+        if (!newCode) return;
+        const clean = newCode.trim().toUpperCase();
+        activePatientCode = clean;
+        localStorage.setItem('eris_active_patient_code', clean);
+
+        if (window.PatientsDB) {
+            const patient = window.PatientsDB.getAll().find(p => 
+                (p.code && p.code.toUpperCase() === clean) || 
+                (p.id && p.id.toUpperCase() === clean) ||
+                (p.id && p.id.toUpperCase() === `PT-${clean.padStart(4, '0')}`)
+            );
+            if (patient) {
+                updatePatientHeaderUI(patient);
+            }
+        }
+        if (modalCode) modalCode.style.display = 'none';
+    };
+
+    if (btnCode && modalCode) {
+        btnCode.addEventListener('click', () => {
+            modalCode.style.display = 'flex';
+        });
+    }
+    if (modalClose && modalCode) {
+        modalClose.addEventListener('click', () => {
+            modalCode.style.display = 'none';
+        });
+    }
+    if (btnSubmitCode && inputCode) {
+        btnSubmitCode.addEventListener('click', () => {
+            if (inputCode.value) switchPatientCode(inputCode.value);
+        });
+    }
+    codeChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const code = chip.getAttribute('data-code');
+            if (code) switchPatientCode(code);
+        });
+    });
+
+    // Subscribe to Live Firebase PatientsDB
+    if (window.PatientsDB) {
+        window.PatientsDB.onUpdate((patients) => {
+            const target = patients.find(p => 
+                (p.code && p.code.toUpperCase() === activePatientCode.toUpperCase()) || 
+                (p.id && p.id.toUpperCase() === activePatientCode.toUpperCase()) ||
+                (p.id && p.id.toUpperCase() === `PT-${activePatientCode.replace('PT-', '').padStart(4, '0')}`)
+            ) || patients[0];
+
+            if (target) {
+                updatePatientHeaderUI(target);
+            }
+        });
     }
 });

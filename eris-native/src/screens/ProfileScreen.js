@@ -2,92 +2,114 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme';
+import { patientService } from '../services/patientService';
 
-export default function ProfileScreen() {
-  const [sosActive, setSosActive] = useState(false);
+export default function ProfileScreen({ patient, onLogout }) {
+  const [sosTriggered, setSosTriggered] = useState(patient?.sosTriggered || false);
 
-  const triggerSOS = () => {
-    setSosActive(true);
-    setTimeout(() => {
-      Alert.alert(
-        "🚨 Emergency SOS Dispatched",
-        "Clinical alert sent to Ward Attending & ICU Response Team. Stay calm, assistance is on the way.",
-        [{ text: "OK", onPress: () => setSosActive(false) }]
-      );
-    }, 1000);
+  const handleSos = () => {
+    Alert.alert(
+      '🚨 Emergency SOS Dispatch',
+      'Are you sure you want to alert the Ward Attending and ICU Emergency Team?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'DISPATCH SOS', 
+          style: 'destructive',
+          onPress: async () => {
+            setSosTriggered(true);
+            await patientService.triggerSOS(patient?.id);
+            Alert.alert('🚨 SOS SENT', 'Emergency dispatch notification sent to Doctor Dashboard & Ward Station.');
+          }
+        }
+      ]
+    );
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Patient Profile Card */}
-      <View style={styles.profileCard}>
-        <View style={styles.avatarLarge}>
-          <Text style={styles.avatarTextLarge}>AV</Text>
-        </View>
-        <Text style={styles.name}>Alexander Vance</Text>
-        <Text style={styles.patientId}>Patient ID: #849-AF-2026</Text>
-
-        <View style={styles.metaRow}>
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Age / Gender</Text>
-            <Text style={styles.metaValue}>34 • Male</Text>
+      <View style={styles.card}>
+        <View style={styles.profileHeader}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {(patient?.name || 'PT').split(' ').map(n => n[0]).join('').substring(0, 2)}
+            </Text>
           </View>
-          <View style={styles.metaDivider} />
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Primary Rehab</Text>
-            <Text style={styles.metaValue}>Right Wrist ROM</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.patientName}>{patient?.name || 'Khalid Othman'}</Text>
+            <Text style={styles.patientId}>Patient Access Code: {patient?.code || patient?.id || 'PT-0331'}</Text>
+          </View>
+        </View>
+
+        <View style={styles.detailsGrid}>
+          <View style={styles.detailBox}>
+            <Text style={styles.detailLabel}>Age / Gender</Text>
+            <Text style={styles.detailVal}>{patient?.age || 38} Yrs • {patient?.gender || 'M'}</Text>
+          </View>
+
+          <View style={styles.detailBox}>
+            <Text style={styles.detailLabel}>Ward / Unit</Text>
+            <Text style={styles.detailVal}>{patient?.ward || 'ICU-2'}</Text>
+          </View>
+
+          <View style={styles.detailBox}>
+            <Text style={styles.detailLabel}>Condition Profile</Text>
+            <Text style={styles.detailVal}>{(patient?.conditionProfile || 'normal').toUpperCase()}</Text>
+          </View>
+
+          <View style={styles.detailBox}>
+            <Text style={styles.detailLabel}>Cloud Status</Text>
+            <Text style={[styles.detailVal, { color: theme.colors.accent }]}>Live Synced</Text>
           </View>
         </View>
       </View>
 
-      {/* Prominent Emergency SOS Button */}
-      <TouchableOpacity 
-        style={[styles.sosButton, sosActive && styles.sosButtonActive]} 
-        onPress={triggerSOS}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="warning" size={24} color="#FFF" />
-        <Text style={styles.sosText}>
-          {sosActive ? 'DISPATCHING EMERGENCY ALERT...' : 'TRIGGER EMERGENCY SOS'}
+      {/* Emergency SOS Alarm Trigger Card */}
+      <View style={[styles.card, sosTriggered && styles.sosActiveCard]}>
+        <Text style={styles.cardTitle}>Emergency Distress Alarm</Text>
+        <Text style={styles.cardSub}>
+          Pressing the Emergency SOS instantly alerts Ward Attending Doctors & ICU Line on the Web Dashboard.
         </Text>
+
+        <TouchableOpacity 
+          style={[styles.sosBtn, sosTriggered && styles.sosBtnTriggered]} 
+          onPress={handleSos}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="warning" size={20} color="#FFFFFF" />
+          <Text style={styles.sosBtnText}>
+            {sosTriggered ? '🚨 EMERGENCY SOS ACTIVE' : 'DISPATCH EMERGENCY SOS'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Contacts List */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Emergency & Care Team Contacts</Text>
+
+        <View style={styles.contactItem}>
+          <Ionicons name="call" size={18} color={theme.colors.primary} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.contactName}>Dr. Sarah Chen (Attending)</Text>
+            <Text style={styles.contactSub}>Ext: 4402 • Ward 4</Text>
+          </View>
+        </View>
+
+        <View style={styles.contactItem}>
+          <Ionicons name="medkit" size={18} color={theme.colors.accent} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.contactName}>ICU Central Nursing Desk</Text>
+            <Text style={styles.contactSub}>Ext: 9110 • Emergency Line</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Logout / Switch Patient Code Button */}
+      <TouchableOpacity style={styles.logoutBtn} onPress={onLogout} activeOpacity={0.8}>
+        <Ionicons name="log-out-outline" size={18} color="#EF4444" />
+        <Text style={styles.logoutText}>Switch Patient Code / Logout</Text>
       </TouchableOpacity>
-
-      {/* Emergency Contacts */}
-      <Text style={styles.sectionTitle}>Emergency Contacts</Text>
-
-      <View style={styles.card}>
-        <View style={styles.contactItem}>
-          <View style={styles.contactIconBg}>
-            <Ionicons name="medkit-outline" size={20} color={theme.colors.danger} />
-          </View>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactName}>Ward 4 Attending Station</Text>
-            <Text style={styles.contactPhone}>Ext. #4091 • Direct ICU Line</Text>
-          </View>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.contactItem}>
-          <View style={styles.contactIconBg}>
-            <Ionicons name="call-outline" size={20} color={theme.colors.accent} />
-          </View>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactName}>Primary Kin (Elena Vance)</Text>
-            <Text style={styles.contactPhone}>+1 (555) 019-2834</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Device Connection Status */}
-      <Text style={styles.sectionTitle}>Connected Hardware</Text>
-      <View style={styles.card}>
-        <View style={styles.deviceRow}>
-          <Ionicons name="hardware-chip-outline" size={20} color={theme.colors.accent} />
-          <Text style={styles.deviceName}>Eris CyberGlove Sensor Array</Text>
-          <Text style={styles.deviceBattery}>94% Battery</Text>
-        </View>
-      </View>
     </ScrollView>
   );
 }
@@ -98,151 +120,144 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bg,
   },
   content: {
-    padding: theme.spacing.md,
-    paddingTop: theme.spacing.lg,
-  },
-  profileCard: {
-    backgroundColor: theme.colors.cardBg,
-    borderRadius: theme.borderRadius.md,
-    borderColor: theme.colors.cardBorder,
-    borderWidth: 1,
-    padding: theme.spacing.lg,
-    alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-  },
-  avatarLarge: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: theme.colors.primaryLight,
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  avatarTextLarge: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: theme.colors.primary,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: theme.colors.textMain,
-  },
-  patientId: {
-    fontSize: 13,
-    color: theme.colors.textDim,
-    marginTop: 2,
-    marginBottom: theme.spacing.md,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#090A0F',
-    borderRadius: theme.borderRadius.sm,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    width: '100%',
-  },
-  metaItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  metaLabel: {
-    fontSize: 11,
-    color: theme.colors.textDim,
-  },
-  metaValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: theme.colors.textMain,
-    marginTop: 2,
-  },
-  metaDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: theme.colors.cardBorder,
-  },
-  sosButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: theme.colors.danger,
-    borderRadius: theme.borderRadius.md,
-    paddingVertical: 14,
-    marginBottom: theme.spacing.lg,
-  },
-  sosButtonActive: {
-    backgroundColor: '#B91C1C',
-  },
-  sosText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFF',
-    letterSpacing: 0.5,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: theme.colors.textMain,
-    marginBottom: theme.spacing.sm,
+    padding: 16,
+    gap: 16,
   },
   card: {
     backgroundColor: theme.colors.cardBg,
-    borderRadius: theme.borderRadius.md,
-    borderColor: theme.colors.cardBorder,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
+    borderColor: theme.colors.cardBorder,
+    padding: 16,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.cardBorder,
+  },
+  avatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: theme.colors.primaryLight,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: theme.colors.primary,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  patientName: {
+    color: theme.colors.textMain,
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  patientId: {
+    color: theme.colors.primary,
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  detailsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  detailBox: {
+    width: '47%',
+    backgroundColor: theme.colors.bg,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    padding: 10,
+  },
+  detailLabel: {
+    color: theme.colors.textDim,
+    fontSize: 11,
+  },
+  detailVal: {
+    color: theme.colors.textMain,
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  sosActiveCard: {
+    borderColor: 'rgba(239, 68, 68, 0.5)',
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+  },
+  cardTitle: {
+    color: theme.colors.textMain,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  cardSub: {
+    color: theme.colors.textDim,
+    fontSize: 12,
+    lineHeight: 17,
+    marginBottom: 14,
+  },
+  sosBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EF4444',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  sosBtnTriggered: {
+    backgroundColor: '#DC2626',
+  },
+  sosBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  contactIconBg: {
-    width: 36,
-    height: 36,
+    backgroundColor: theme.colors.bg,
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: theme.spacing.sm,
-  },
-  contactInfo: {
-    flex: 1,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    padding: 12,
+    marginTop: 8,
+    gap: 12,
   },
   contactName: {
-    fontSize: 14,
-    fontWeight: '600',
     color: theme.colors.textMain,
+    fontSize: 13,
+    fontWeight: '600',
   },
-  contactPhone: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
-    marginTop: 2,
+  contactSub: {
+    color: theme.colors.textDim,
+    fontSize: 11,
+    marginTop: 1,
   },
-  divider: {
-    height: 1,
-    backgroundColor: theme.colors.cardBorder,
-    marginVertical: theme.spacing.sm,
-  },
-  deviceRow: {
+  logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginTop: 8,
     gap: 8,
   },
-  deviceName: {
-    flex: 1,
+  logoutText: {
+    color: '#EF4444',
     fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textMain,
-  },
-  deviceBattery: {
-    fontSize: 12,
     fontWeight: '700',
-    color: theme.colors.accent,
   },
 });

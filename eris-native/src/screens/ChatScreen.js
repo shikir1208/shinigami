@@ -1,88 +1,116 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  ScrollView, 
+  TextInput, 
+  TouchableOpacity, 
+  KeyboardAvoidingView, 
+  Platform 
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme';
+import { patientService } from '../services/patientService';
 
-export default function ChatScreen() {
-  const [messages, setMessages] = useState([
-    { id: 1, sender: 'doctor', text: 'Good morning Alexander! How is your wrist feeling after yesterday’s flexion session?', time: '09:15 AM' },
-    { id: 2, sender: 'patient', text: 'Morning Dr. Chen! Range of motion feels much smoother. Mild stiffness in the morning but no acute pain.', time: '09:18 AM' },
-    { id: 3, sender: 'doctor', text: 'Excellent progress. Your EMG muscle activation data reached 84µV, which shows great neuromuscular recovery.', time: '09:20 AM' },
-  ]);
+export default function ChatScreen({ patient }) {
+  const [inputText, setInputText] = useState('');
+  const scrollViewRef = useRef(null);
 
-  const [input, setInput] = useState('');
+  const messages = patient?.messages || [
+    { id: 'm1', sender: 'Dr. Sarah Chen', text: 'Hello! I am monitoring your telemetry.', timestamp: Date.now() - 3600000, type: 'doc' }
+  ];
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    const newMsg = { id: Date.now(), sender: 'patient', text: input, time: 'Just now' };
-    setMessages([...messages, newMsg]);
-    setInput('');
-  };
+  const handleSend = () => {
+    if (!inputText.trim() || !patient?.id) return;
+    const textToSend = inputText.trim();
+    setInputText('');
 
-  const askPhiAI = () => {
-    const aiMsg = { 
-      id: Date.now(), 
-      sender: 'ai', 
-      text: '🤖 Phi-3.5 Clinical Analysis: Current vital trends & muscle activation show 78.5% recovery. Recommended action: 10 mins mild range-of-motion stretching.', 
-      time: 'Just now' 
-    };
-    setMessages([...messages, aiMsg]);
+    patientService.sendChatMessage(patient.id, patient.name || 'Patient', textToSend, 'patient');
+
+    // Optional AI auto-response if question mentions AI/symptoms
+    if (textToSend.toLowerCase().includes('phi') || textToSend.toLowerCase().includes('ai') || textToSend.toLowerCase().includes('symptom')) {
+      setTimeout(() => {
+        patientService.sendChatMessage(
+          patient.id,
+          'Phi-3.5 Assistant',
+          `✦ Analysis for ${patient.name}: SpO2 is ${patient.vitals?.spo2 || 98}%, HR is ${patient.vitals?.hr || 78} BPM. Vitals stable.`,
+          'ai'
+        );
+      }, 1200);
+    }
   };
 
   return (
     <KeyboardAvoidingView 
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {/* Doctor Header Bar */}
-      <View style={styles.doctorHeader}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarInitials}>SC</Text>
+      {/* Doctor Header Banner */}
+      <View style={styles.docHeader}>
+        <View style={styles.docAvatar}>
+          <Text style={styles.docAvatarText}>SC</Text>
         </View>
-        <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>Dr. Sarah Chen</Text>
-          <Text style={styles.doctorRole}>Chief of Physical Rehabilitation</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.docName}>Dr. Sarah Chen</Text>
+          <Text style={styles.docTitle}>Attending Physician • Ward 4</Text>
         </View>
-        <TouchableOpacity style={styles.aiButton} onPress={askPhiAI}>
-          <Ionicons name="hardware-chip-outline" size={18} color={theme.colors.primary} />
-          <Text style={styles.aiButtonText}>Phi-3.5</Text>
-        </TouchableOpacity>
+        <View style={styles.onlineBadge}>
+          <View style={styles.onlineDot} />
+          <Text style={styles.onlineText}>Connected</Text>
+        </View>
       </View>
 
-      {/* Chat Messages */}
-      <ScrollView style={styles.messagesList} contentContainerStyle={styles.messagesContent}>
-        {messages.map(msg => {
-          const isPatient = msg.sender === 'patient';
-          const isAI = msg.sender === 'ai';
+      {/* Message Feed */}
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.feed} 
+        contentContainerStyle={styles.feedContent}
+        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+      >
+        {messages.map((m, idx) => {
+          const isMe = m.type === 'patient';
+          const isAi = m.type === 'ai';
 
           return (
             <View 
-              key={msg.id} 
+              key={m.id || idx} 
               style={[
-                styles.messageBubble,
-                isPatient ? styles.patientBubble : isAI ? styles.aiBubble : styles.doctorBubble
+                styles.msgWrapper, 
+                isMe ? styles.msgWrapperRight : styles.msgWrapperLeft
               ]}
             >
-              <Text style={[styles.messageText, isPatient ? styles.patientText : styles.doctorText]}>
-                {msg.text}
+              <Text style={styles.senderLabel}>{m.sender}</Text>
+              <View style={[
+                styles.msgBubble, 
+                isMe ? styles.msgBubbleRight : (isAi ? styles.msgBubbleAi : styles.msgBubbleLeft)
+              ]}>
+                <Text style={[styles.msgText, isMe ? styles.msgTextRight : styles.msgTextLeft]}>
+                  {m.text}
+                </Text>
+              </View>
+              <Text style={styles.msgTime}>
+                {new Date(m.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
-              <Text style={styles.messageTime}>{msg.time}</Text>
             </View>
           );
         })}
       </ScrollView>
 
       {/* Input Bar */}
-      <View style={styles.inputContainer}>
+      <View style={styles.inputBar}>
         <TextInput
-          style={styles.textInput}
-          placeholder="Write a message to Dr. Chen..."
+          style={styles.input}
+          placeholder="Message Dr. Sarah Chen..."
           placeholderTextColor={theme.colors.textDim}
-          value={input}
-          onChangeText={setInput}
+          value={inputText}
+          onChangeText={setInputText}
+          returnKeyType="send"
+          onSubmitEditing={handleSend}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Ionicons name="send" size={18} color="#FFF" />
+        <TouchableOpacity style={styles.sendBtn} onPress={handleSend} activeOpacity={0.8}>
+          <Ionicons name="send" size={18} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -94,122 +122,144 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.bg,
   },
-  doctorHeader: {
+  docHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.md,
     backgroundColor: theme.colors.cardBg,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.cardBorder,
+    gap: 12,
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.accentLight,
+  docAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: theme.spacing.sm,
   },
-  avatarInitials: {
-    color: theme.colors.accent,
-    fontWeight: '700',
+  docAvatarText: {
+    color: theme.colors.primary,
     fontSize: 14,
-  },
-  doctorInfo: {
-    flex: 1,
-  },
-  doctorName: {
-    fontSize: 15,
     fontWeight: '700',
+  },
+  docName: {
     color: theme.colors.textMain,
+    fontSize: 14,
+    fontWeight: '700',
   },
-  doctorRole: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
+  docTitle: {
+    color: theme.colors.textDim,
+    fontSize: 11,
   },
-  aiButton: {
+  onlineBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: theme.colors.primaryLight,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.3)',
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
-  aiButtonText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: theme.colors.primary,
+  onlineDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.colors.accent,
   },
-  messagesList: {
+  onlineText: {
+    color: theme.colors.accent,
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  feed: {
     flex: 1,
   },
-  messagesContent: {
-    padding: theme.spacing.md,
+  feedContent: {
+    padding: 16,
+    gap: 12,
   },
-  messageBubble: {
+  msgWrapper: {
     maxWidth: '82%',
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
+    marginVertical: 4,
   },
-  doctorBubble: {
+  msgWrapperLeft: {
     alignSelf: 'flex-start',
-    backgroundColor: theme.colors.cardBg,
-    borderColor: theme.colors.cardBorder,
-    borderWidth: 1,
   },
-  patientBubble: {
+  msgWrapperRight: {
     alignSelf: 'flex-end',
-    backgroundColor: theme.colors.primary,
   },
-  aiBubble: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#16192B',
-    borderColor: theme.colors.primary,
+  senderLabel: {
+    color: theme.colors.textDim,
+    fontSize: 10,
+    fontWeight: '600',
+    marginBottom: 2,
+    marginHorizontal: 4,
+  },
+  msgBubble: {
+    borderRadius: 16,
+    padding: 12,
+  },
+  msgBubbleLeft: {
+    backgroundColor: theme.colors.cardBg,
     borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
+    borderTopLeftRadius: 4,
   },
-  messageText: {
-    fontSize: 14,
-    lineHeight: 20,
+  msgBubbleRight: {
+    backgroundColor: theme.colors.primary,
+    borderTopRightRadius: 4,
   },
-  doctorText: {
+  msgBubbleAi: {
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderTopLeftRadius: 4,
+  },
+  msgText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  msgTextLeft: {
     color: theme.colors.textMain,
   },
-  patientText: {
-    color: '#FFF',
+  msgTextRight: {
+    color: '#FFFFFF',
   },
-  messageTime: {
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.5)',
+  msgTime: {
+    color: theme.colors.textDim,
+    fontSize: 9,
     marginTop: 4,
     alignSelf: 'flex-end',
+    marginHorizontal: 4,
   },
-  inputContainer: {
+  inputBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.sm,
+    padding: 12,
     backgroundColor: theme.colors.cardBg,
     borderTopWidth: 1,
     borderTopColor: theme.colors.cardBorder,
+    gap: 10,
   },
-  textInput: {
+  input: {
     flex: 1,
-    backgroundColor: '#090A0F',
+    backgroundColor: theme.colors.bg,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.cardBorder,
     paddingHorizontal: 16,
     paddingVertical: 10,
     color: theme.colors.textMain,
     fontSize: 14,
-    marginRight: theme.spacing.sm,
   },
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  sendBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',

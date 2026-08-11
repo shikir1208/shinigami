@@ -44,6 +44,9 @@
                 </div>
             </div>
             <div class="eris-header-actions">
+                <button class="eris-code-btn" id="eris-btn-code" title="Switch Patient Code">
+                    <span id="eris-current-code-badge">PT-0331</span>
+                </button>
                 <button class="eris-sos-btn" id="eris-btn-sos" title="Emergency SOS">
                     <span>SOS</span>
                 </button>
@@ -109,7 +112,28 @@
 
             </section>
 
-            <!-- TAB 2: REHAB GAMIFICATION & RANKINGS -->
+            <!-- Patient Code Login Modal -->
+        <div id="eris-code-modal" class="eris-modal-overlay" style="display:none;">
+            <div class="eris-modal-card">
+                <div class="eris-modal-header">
+                    <h3>🔑 Patient Access Login</h3>
+                    <button id="eris-modal-close" class="eris-icon-btn">&times;</button>
+                </div>
+                <p class="eris-modal-sub">Enter your Patient Code to sync live telemetry, rehabilitation quests, and doctor chat from the server.</p>
+                <div class="eris-modal-input-group">
+                    <input type="text" id="eris-input-patient-code" placeholder="e.g. PT-0331 or RAWAN-2026" autocomplete="off" style="text-transform: uppercase;">
+                    <button id="eris-btn-submit-code" class="eris-btn-primary">Connect Session</button>
+                </div>
+                <div class="eris-quick-codes">
+                    <span class="eris-quick-label">QUICK DEMO CODES:</span>
+                    <button class="eris-code-chip" data-code="PT-0331">PT-0331 (Khalid)</button>
+                    <button class="eris-code-chip" data-code="PT-0041">PT-0041 (Zaid)</button>
+                    <button class="eris-code-chip" data-code="RAWAN-2026">RAWAN-2026 (Rawan)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: REHAB GAMIFICATION & RANKINGS -->
             <section id="tab-rehab" class="eris-tab-view">
                 
                 <!-- Player Rank Banner -->
