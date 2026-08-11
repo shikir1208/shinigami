@@ -511,3 +511,92 @@ if (btnSaveNote) {
         document.getElementById('note-input').value = '';
     });
 }
+
+// ===== REAL-TIME PATIENT-DOCTOR CHAT SYNC =====
+const chatFeed = document.getElementById('pt-doc-chat-feed');
+const chatInput = document.getElementById('pt-doc-chat-input');
+const chatSend = document.getElementById('pt-doc-chat-send');
+
+let lastRenderedCount = -1;
+
+function renderPatientChatMessages(messages) {
+    if (!chatFeed) return;
+    const msgs = messages || [];
+    if (msgs.length === lastRenderedCount) return;
+    lastRenderedCount = msgs.length;
+
+    if (msgs.length === 0) {
+        chatFeed.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 1rem;">No messages yet. Start a conversation with the patient!</div>';
+        return;
+    }
+
+    chatFeed.innerHTML = '';
+    msgs.forEach(m => {
+        const isDoc = m.type === 'doc';
+        const isAi = m.type === 'ai';
+        const align = isDoc ? 'flex-end' : 'flex-start';
+        const bg = isDoc ? 'rgba(14,165,233,0.2)' : (isAi ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.06)');
+        const border = isDoc ? '1px solid rgba(14,165,233,0.4)' : (isAi ? '1px solid rgba(139,92,246,0.4)' : '1px solid var(--border-subtle)');
+        const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const sender = isDoc ? (Auth.getUser() ? `Dr. ${Auth.getUser().username}` : 'Doctor') : (m.sender || 'Patient');
+
+        const msgDiv = document.createElement('div');
+        msgDiv.style.cssText = `align-self: ${align}; max-width: 85%; background: ${bg}; border: ${border}; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); margin-bottom: 0.25rem; font-size: 0.85rem;`;
+        msgDiv.innerHTML = `
+            <div style="font-size: 0.7rem; font-weight: bold; color: ${isDoc ? 'var(--accent-cyan)' : (isAi ? '#a78bfa' : 'var(--text-secondary)')}; margin-bottom: 2px; display:flex; justify-content:space-between; gap:0.5rem;">
+                <span>${sender}</span>
+                <span style="opacity:0.6; font-weight:normal;">${time}</span>
+            </div>
+            <div style="color: var(--text-primary); line-height: 1.3;">${(m.text || '').replace(/\n/g, '<br>')}</div>
+        `;
+        chatFeed.appendChild(msgDiv);
+    });
+
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+}
+
+async function sendDoctorChatMessage() {
+    if (!chatInput || !currentPatient) return;
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = '';
+
+    const doctorName = Auth.getUser() ? `Dr. ${Auth.getUser().username}` : 'Doctor';
+    const newMsg = {
+        id: `m_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        sender: doctorName,
+        text: text,
+        timestamp: Date.now(),
+        type: 'doc'
+    };
+
+    const currentMsgs = currentPatient.messages || [];
+    currentMsgs.push(newMsg);
+    currentPatient.messages = currentMsgs;
+
+    // Immediately render UI
+    renderPatientChatMessages(currentMsgs);
+
+    // Sync to Firestore
+    await PatientsDB.updatePatient(currentPatient.id, { messages: currentMsgs });
+}
+
+if (chatSend) chatSend.addEventListener('click', sendDoctorChatMessage);
+if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendDoctorChatMessage();
+    });
+}
+
+// Live listener for real-time message updates on patient.html
+if (typeof PatientsDB !== 'undefined') {
+    PatientsDB.onUpdate((patients) => {
+        if (!currentPatient) return;
+        const updated = patients.find(p => p.id === currentPatient.id);
+        if (updated) {
+            currentPatient = updated;
+            renderPatientChatMessages(updated.messages);
+        }
+    });
+}
+

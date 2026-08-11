@@ -469,6 +469,132 @@ document.addEventListener('DOMContentLoaded', () => {
         aiInput.style.height = Math.min(aiInput.scrollHeight, 120) + 'px';
     });
 
+    // ===== DIRECT PATIENT LIVE CHAT MODAL LOGIC =====
+    const ptChatModal = document.getElementById('patient-chat-modal');
+    const btnPtChatOpen = document.getElementById('btn-patient-chat-modal');
+    const btnPtChatClose = document.getElementById('btn-close-patient-chat');
+    const ptSelect = document.getElementById('dash-chat-patient-select');
+    const ptChatBody = document.getElementById('dash-patient-chat-body');
+    const ptChatInput = document.getElementById('dash-patient-chat-input');
+    const ptChatSend = document.getElementById('dash-patient-chat-send');
+    let activeChatPatientId = null;
+
+    function populatePatientChatSelect() {
+        if (!ptSelect) return;
+        const patients = PatientsDB.getAll();
+        ptSelect.innerHTML = '';
+        patients.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = `${p.name} (${p.id})`;
+            if (activeChatPatientId === p.id) opt.selected = true;
+            ptSelect.appendChild(opt);
+        });
+        if (!activeChatPatientId && patients.length > 0) {
+            activeChatPatientId = patients[0].id;
+        }
+    }
+
+    function renderPatientChatFeed() {
+        if (!ptChatBody || !activeChatPatientId) return;
+        const patient = PatientsDB.getById(activeChatPatientId);
+        if (!patient) return;
+
+        const msgs = patient.messages || [];
+        if (msgs.length === 0) {
+            ptChatBody.innerHTML = `<div style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding:2rem;">No message history with ${patient.name}. Send a message below!</div>`;
+            return;
+        }
+
+        ptChatBody.innerHTML = '';
+        msgs.forEach(m => {
+            const isDoc = m.type === 'doc';
+            const isAi = m.type === 'ai';
+            const align = isDoc ? 'flex-end' : 'flex-start';
+            const bg = isDoc ? 'rgba(14,165,233,0.2)' : (isAi ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.06)');
+            const border = isDoc ? '1px solid rgba(14,165,233,0.4)' : (isAi ? '1px solid rgba(139,92,246,0.4)' : '1px solid var(--border-subtle)');
+            const time = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+            const sender = isDoc ? (Auth.getUser() ? `Dr. ${Auth.getUser().username}` : 'Doctor') : (m.sender || patient.name);
+
+            const msgDiv = document.createElement('div');
+            msgDiv.style.cssText = `align-self: ${align}; max-width: 85%; background: ${bg}; border: ${border}; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem;`;
+            msgDiv.innerHTML = `
+                <div style="font-size: 0.7rem; font-weight: bold; color: ${isDoc ? 'var(--accent-cyan)' : (isAi ? '#a78bfa' : 'var(--text-secondary)')}; margin-bottom: 2px; display:flex; justify-content:space-between; gap:0.5rem;">
+                    <span>${sender}</span>
+                    <span style="opacity:0.6; font-weight:normal;">${time}</span>
+                </div>
+                <div style="color: var(--text-primary); line-height: 1.3;">${(m.text || '').replace(/\n/g, '<br>')}</div>
+            `;
+            ptChatBody.appendChild(msgDiv);
+        });
+
+        ptChatBody.scrollTop = ptChatBody.scrollHeight;
+    }
+
+    async function sendDashPatientMessage() {
+        if (!ptChatInput || !activeChatPatientId) return;
+        const text = ptChatInput.value.trim();
+        if (!text) return;
+        ptChatInput.value = '';
+
+        const patient = PatientsDB.getById(activeChatPatientId);
+        if (!patient) return;
+
+        const doctorName = Auth.getUser() ? `Dr. ${Auth.getUser().username}` : 'Doctor';
+        const newMsg = {
+            id: `m_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+            sender: doctorName,
+            text: text,
+            timestamp: Date.now(),
+            type: 'doc'
+        };
+
+        const msgs = patient.messages || [];
+        msgs.push(newMsg);
+        await PatientsDB.updatePatient(patient.id, { messages: msgs });
+        renderPatientChatFeed();
+    }
+
+    if (btnPtChatOpen) {
+        btnPtChatOpen.addEventListener('click', () => {
+            populatePatientChatSelect();
+            renderPatientChatFeed();
+            ptChatModal.classList.add('active');
+            lockBodyScroll();
+            if (ptChatInput) ptChatInput.focus();
+        });
+    }
+
+    if (btnPtChatClose) {
+        btnPtChatClose.addEventListener('click', () => {
+            ptChatModal.classList.remove('active');
+            unlockBodyScroll();
+        });
+    }
+
+    if (ptSelect) {
+        ptSelect.addEventListener('change', (e) => {
+            activeChatPatientId = e.target.value;
+            renderPatientChatFeed();
+        });
+    }
+
+    if (ptChatSend) ptChatSend.addEventListener('click', sendDashPatientMessage);
+    if (ptChatInput) {
+        ptChatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendDashPatientMessage();
+        });
+    }
+
+    // Auto-update modal if open when PatientsDB updates
+    if (typeof PatientsDB !== 'undefined') {
+        PatientsDB.onUpdate(() => {
+            if (ptChatModal && ptChatModal.classList.contains('active')) {
+                renderPatientChatFeed();
+            }
+        });
+    }
+
     // Shift Report Logic
     const reportModal = document.getElementById('shift-report-modal');
     document.getElementById('btn-shift-report').addEventListener('click', () => {
@@ -987,6 +1113,10 @@ function renderPatients(patients) {
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:0.5rem; flex-shrink:0;">
+                    <button class="btn btn-secondary btn-sm card-chat-btn" data-id="${patient.id}" style="padding:0.25rem 0.5rem; font-size:0.75rem; border-radius:6px; display:flex; align-items:center; gap:0.25rem;" onclick="event.stopPropagation();">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Chat</span>
+                    </button>
                     <div class="status-indicator ${statusClass}"></div>
                     <input type="checkbox" class="compare-cb" data-id="${patient.id}" style="width:18px; height:18px; cursor:pointer;" onclick="event.stopPropagation()">
                 </div>
@@ -1009,6 +1139,20 @@ function renderPatients(patients) {
             </div>
         `;
         grid.appendChild(card);
+
+        // Quick chat button listener
+        const cardChatBtn = card.querySelector('.card-chat-btn');
+        if (cardChatBtn) {
+            cardChatBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                activeChatPatientId = patient.id;
+                populatePatientChatSelect();
+                renderPatientChatFeed();
+                ptChatModal.classList.add('active');
+                lockBodyScroll();
+                if (ptChatInput) ptChatInput.focus();
+            });
+        }
 
         // Set up Firebase real-time listener for this patient's sensor data
         setupLiveSensorListener(patient.id);

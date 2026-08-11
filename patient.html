@@ -238,6 +238,27 @@
                 <!-- Right Column: Info & Timeline -->
                 <div class="info-column fade-in" style="animation-delay: 0.2s">
                     
+                    <!-- Real-Time Patient-Doctor Chat Panel -->
+                    <div class="card glass-panel" style="margin-bottom: var(--spacing-lg);">
+                        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2 style="display:flex; align-items:center; gap:0.5rem;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                Patient Live Communication
+                            </h2>
+                            <span class="badge badge-normal" style="font-size:0.65rem;" id="pt-chat-status">REAL-TIME SYNC</span>
+                        </div>
+                        <div class="pt-chat-feed" id="pt-doc-chat-feed" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); margin-bottom: 0.75rem; border: 1px solid var(--border-subtle);">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 1rem;">Loading message history...</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <input type="text" id="pt-doc-chat-input" class="input-field" placeholder="Reply to patient..." style="flex:1;">
+                            <button id="pt-doc-chat-send" class="btn btn-primary" style="padding: 0.4rem 1rem;">
+                                <span>Send</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Clinical Notes Panel -->
                     <div class="card glass-panel" style="margin-bottom: var(--spacing-lg);">
                         <div class="section-header">

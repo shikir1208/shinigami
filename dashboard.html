@@ -47,6 +47,10 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a2 2 0 0 1-2 2h-1l-1 7H9l-1-7H7a2 2 0 0 1-2-2v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
                     Alpha1 AI
                 </button>
+                <button class="btn btn-secondary btn-sm" id="btn-patient-chat-modal" title="Patient Live Chat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Patient Messages
+                </button>
                 <button class="btn btn-secondary btn-sm" id="btn-shift-report">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     Shift Report
@@ -492,6 +496,29 @@
                 <button id="ai-chat-send" class="ai-chat-send" title="Send message">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Direct Patient Chat Modal -->
+    <div id="patient-chat-modal" class="modal-overlay ai-chat-modal">
+        <div class="modal-content card glass-panel" style="max-width: 650px;">
+            <div class="ai-chat-header">
+                <div class="ai-chat-header-left" style="display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <h2 id="dash-chat-patient-name">Patient Live Chat</h2>
+                    <select id="dash-chat-patient-select" class="input-field" style="width:auto; padding:0.2rem 0.5rem; font-size:0.8rem; margin:0; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:8px;"></select>
+                </div>
+                <div class="ai-chat-header-actions">
+                    <button id="btn-close-patient-chat" class="btn-close">&times;</button>
+                </div>
+            </div>
+            <div class="ai-chat-body" id="dash-patient-chat-body" style="height: 320px; max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                <!-- Messages rendered dynamically -->
+            </div>
+            <div class="ai-chat-input-area" style="padding: 0.75rem 1rem;">
+                <input type="text" id="dash-patient-chat-input" class="input-field" placeholder="Type a message to the patient..." style="flex:1;">
+                <button id="dash-patient-chat-send" class="btn btn-primary btn-sm" style="padding: 0.5rem 1rem;">Send</button>
             </div>
         </div>
     </div>
