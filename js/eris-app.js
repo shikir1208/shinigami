@@ -1,6 +1,6 @@
 /**
  * Eris App — Android Mobile Companion State Manager & Gamification Engine
- * Handles rehabilitation quests, XP leveling, daily quotes, live telemetry, doctor chat, and SOS panic triggers.
+ * Now with Real-Time Firestore Sync & Dynamic Doctor Identity
  */
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 'q2', title: 'SpO2 Deep Breathing (5m)', xp: 150, completed: false },
             { id: 'q3', title: 'GSR Stress Relaxation', xp: 300, completed: false },
             { id: 'q4', title: 'IMU Motion Tracking Check', xp: 200, completed: false }
-        ]
+        ],
+        lastRenderedMessageCount: 0
     };
 
     // --- Motivational Quotes Pool ---
@@ -118,6 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     updateGamificationUI();
                     renderQuests();
+
+                    // Sync quest state to Firestore
+                    if (window.PatientsDB && currentPatientData) {
+                        PatientsDB.updatePatient(currentPatientData.id, {
+                            quests: state.quests,
+                            xp: state.xp,
+                            level: state.level,
+                            nextLevelXp: state.nextLevelXp,
+                            rankTier: state.rankTier
+                        });
+                    }
                 }
             });
         });
@@ -166,10 +178,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Doctor & AI Chat Interface ---
+    // --- Doctor & AI Chat Interface (Now Firestore-Synced) ---
     const chatFeed = document.getElementById('eris-chat-feed');
     const chatInput = document.getElementById('eris-chat-input');
     const chatSend = document.getElementById('eris-chat-send');
+
+    // Get the doctor's actual name from the login
+    const getDoctorName = () => {
+        // Check if Auth is loaded and doctor is logged in (on dashboard)
+        if (typeof Auth !== 'undefined' && Auth.getUser) {
+            const user = Auth.getUser();
+            if (user && user.username) {
+                return `Dr. ${user.username}`;
+            }
+        }
+        // Check localStorage for eris-specific doctor name
+        const storedDoctor = localStorage.getItem('eris_doctor_name');
+        if (storedDoctor) return storedDoctor;
+        // Default fallback
+        return 'Your Doctor';
+    };
+
+    const getDoctorInitials = () => {
+        const name = getDoctorName().replace('Dr. ', '');
+        return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    };
+
+    // Update doctor banner with dynamic name
+    const updateDoctorBanner = () => {
+        const docNameEl = document.getElementById('eris-doc-name');
+        const docAvatarEl = document.getElementById('eris-doc-avatar');
+        const docTitleEl = document.getElementById('eris-doc-title');
+        const chatInputEl = document.getElementById('eris-chat-input');
+        
+        const doctorName = getDoctorName();
+        if (docNameEl) docNameEl.textContent = doctorName;
+        if (docAvatarEl) docAvatarEl.textContent = getDoctorInitials();
+        if (docTitleEl) docTitleEl.textContent = 'ICU Attending & Rehabilitation Specialist';
+        if (chatInputEl) chatInputEl.placeholder = `Message ${doctorName} or ask Phi-3.5...`;
+    };
+    updateDoctorBanner();
 
     const addChatMessage = (sender, text, type = 'patient') => {
         if (!chatFeed) return;
@@ -185,26 +233,87 @@ document.addEventListener('DOMContentLoaded', () => {
         chatFeed.scrollTop = chatFeed.scrollHeight;
     };
 
+    // Render all messages from Firestore patient data
+    const renderChatFromFirestore = (messages) => {
+        if (!chatFeed || !messages) return;
+        if (messages.length === state.lastRenderedMessageCount) return; // No new messages
+
+        // Clear existing static/old messages and re-render all from Firestore
+        chatFeed.innerHTML = '';
+        
+        messages.forEach(m => {
+            const msgDiv = document.createElement('div');
+            const msgType = m.type === 'patient' ? 'patient' : (m.type === 'ai' ? 'ai' : 'doc');
+            msgDiv.className = `eris-msg eris-msg-${msgType}`;
+            
+            const time = m.timestamp 
+                ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : '';
+            
+            msgDiv.innerHTML = `
+                <div class="eris-msg-bubble">${(m.text || '').replace(/\n/g, '<br>')}</div>
+                <span class="eris-msg-time">${time}</span>
+            `;
+            chatFeed.appendChild(msgDiv);
+        });
+
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+        state.lastRenderedMessageCount = messages.length;
+    };
+
     const handleChatSubmit = async () => {
         if (!chatInput) return;
         const query = chatInput.value.trim();
         if (!query) return;
-
-        addChatMessage('Khalid', query, 'patient');
         chatInput.value = '';
 
-        // Check if query is for AI or Doctor
-        if (query.toLowerCase().includes('phi') || query.toLowerCase().includes('ai') || query.toLowerCase().includes('symptom') || query.toLowerCase().includes('risk')) {
-            addChatMessage('Phi-3.5 Assistant', '✦ Analyzing telemetry & patient profile...', 'ai');
-            const aiResponse = await Alpha1Brain.query(query);
-            // Replace loading message
-            const lastMsg = chatFeed.querySelector('.eris-msg-ai:last-child .eris-msg-bubble');
-            if (lastMsg) lastMsg.innerHTML = `✦ <strong>Phi-3.5 Patient Assistant</strong>:<br>${aiResponse.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}`;
+        const patientName = currentPatientData?.name || 'Patient';
+
+        // Write message to Firestore (will auto-sync back via real-time listener)
+        if (window.PatientsDB && currentPatientData) {
+            const newMsg = {
+                id: `m_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+                sender: patientName,
+                text: query,
+                timestamp: Date.now(),
+                type: 'patient'
+            };
+
+            // Add to Firestore messages array
+            const currentMsgs = currentPatientData.messages || [];
+            currentMsgs.push(newMsg);
+            await PatientsDB.updatePatient(currentPatientData.id, { messages: currentMsgs });
+
+            // Check if query is for AI or Doctor
+            if (query.toLowerCase().includes('phi') || query.toLowerCase().includes('ai') || query.toLowerCase().includes('symptom') || query.toLowerCase().includes('risk')) {
+                const aiResponse = await Alpha1Brain.query(query);
+                const aiMsg = {
+                    id: `m_${Date.now()}_ai`,
+                    sender: 'Phi-3.5 Assistant',
+                    text: `✦ ${aiResponse.replace(/\*\*(.*?)\*\*/g, '$1')}`,
+                    timestamp: Date.now(),
+                    type: 'ai'
+                };
+                currentMsgs.push(aiMsg);
+                await PatientsDB.updatePatient(currentPatientData.id, { messages: currentMsgs });
+            } else {
+                // Auto-reply from doctor (simulated, using actual doctor name)
+                const doctorName = getDoctorName();
+                setTimeout(async () => {
+                    const docMsg = {
+                        id: `m_${Date.now()}_doc`,
+                        sender: doctorName,
+                        text: `Thanks for updating me, ${patientName.split(' ')[0]}. I reviewed your message ("${query}"). Your vitals look solid — keep up the daily rehab exercises!`,
+                        timestamp: Date.now(),
+                        type: 'doc'
+                    };
+                    currentMsgs.push(docMsg);
+                    await PatientsDB.updatePatient(currentPatientData.id, { messages: currentMsgs });
+                }, 1200);
+            }
         } else {
-            // Simulated Doctor Auto-Reply
-            setTimeout(() => {
-                addChatMessage('Dr. Sarah Chen', `Thanks for updating me, Khalid. I reviewed your query ("${query}"). Your vitals look solid — keep up the daily rehab exercises!`, 'doc');
-            }, 1200);
+            // Fallback if no Firestore
+            addChatMessage(patientName, query, 'patient');
         }
     };
 
@@ -233,6 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (state.sosCountdown <= 0) {
                     clearInterval(state.sosTimer);
+                    // Also write SOS to Firestore so dashboard sees it
+                    if (window.PatientsDB && currentPatientData) {
+                        PatientsDB.updatePatient(currentPatientData.id, {
+                            sosTriggered: true,
+                            sosTimestamp: Date.now()
+                        });
+                    }
                     alert('🚨 EMERGENCY SOS DISPATCHED: Ward Attending & Emergency Contacts Have Been Notified!');
                     if (sosOverlay) sosOverlay.style.display = 'none';
                 }
@@ -277,13 +393,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const recVal = document.getElementById('eris-recovery-val');
         if (recVal) recVal.textContent = `${patient.recoveryPercent || 68}%`;
 
-        // Vitals
+        // Vitals from Firestore
         const hrEl = document.getElementById('eris-val-hr');
         const spo2El = document.getElementById('eris-val-spo2');
+        const emgEl = document.getElementById('eris-val-emg');
+        const gsrEl = document.getElementById('eris-val-gsr');
         if (patient.vitals) {
             if (hrEl) hrEl.innerHTML = `${patient.vitals.hr || 78} <span class="vital-unit">BPM</span>`;
             if (spo2El) spo2El.innerHTML = `${patient.vitals.spo2 || 98} <span class="vital-unit">%</span>`;
+            if (emgEl) emgEl.innerHTML = `${patient.vitals.emg || 3.4} <span class="vital-unit">µV</span>`;
+            if (gsrEl) gsrEl.innerHTML = `${patient.vitals.gsr || 2.8} <span class="vital-unit">µS</span>`;
         }
+
+        // Update quests from Firestore
+        if (patient.quests && patient.quests.length > 0) {
+            state.quests = patient.quests;
+            state.xp = patient.xp || state.xp;
+            state.level = patient.level || state.level;
+            state.nextLevelXp = patient.nextLevelXp || state.nextLevelXp;
+            state.rankTier = patient.rankTier || state.rankTier;
+            state.streakDays = patient.streakDays || state.streakDays;
+            state.recoveryPercent = patient.recoveryPercent || state.recoveryPercent;
+            renderQuests();
+            updateGamificationUI();
+        }
+
+        // Update profile tab dynamically
+        const profileAvatarEl = document.querySelector('.eris-avatar-lg');
+        const profileNameEl = document.querySelector('.eris-profile-header h2');
+        const profileMetaEl = document.querySelector('.eris-meta-pill');
+        if (profileAvatarEl) profileAvatarEl.textContent = initials;
+        if (profileNameEl) profileNameEl.textContent = patient.name || 'Patient';
+        if (profileMetaEl) profileMetaEl.textContent = `Patient ID: ${patient.id} • ${patient.ward || 'Ward'}`;
+
+        // Update profile details
+        const detailVals = document.querySelectorAll('.eris-detail-row .detail-val');
+        if (detailVals.length >= 3) {
+            detailVals[0].textContent = `${patient.age || '—'} ${patient.gender || ''}`;
+            detailVals[1].textContent = (patient.conditionProfile || 'normal').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            detailVals[2].textContent = getDoctorName();
+        }
+
+        // Render chat messages from Firestore
+        if (patient.messages && patient.messages.length > 0) {
+            renderChatFromFirestore(patient.messages);
+        }
+
+        // Update SOS overlay doctor name
+        const sosP = document.querySelector('.eris-sos-content p');
+        if (sosP) sosP.textContent = `Alert notification sent to ${getDoctorName()} and ICU ${patient.ward || 'Ward'} Nurse Station!`;
     };
 
     const switchPatientCode = (newCode) => {
@@ -291,6 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clean = newCode.trim().toUpperCase();
         activePatientCode = clean;
         localStorage.setItem('eris_active_patient_code', clean);
+        state.lastRenderedMessageCount = 0; // Reset chat render count
 
         if (window.PatientsDB) {
             const patient = window.PatientsDB.getAll().find(p => 
@@ -327,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Subscribe to Live Firebase PatientsDB
+    // Subscribe to Live Firebase PatientsDB — REAL-TIME BI-DIRECTIONAL SYNC
     if (window.PatientsDB) {
         window.PatientsDB.onUpdate((patients) => {
             const target = patients.find(p => 
